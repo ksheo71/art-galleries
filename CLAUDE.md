@@ -14,7 +14,7 @@ Art Gallery
 - /apps 하위에는 API제공해주는 사이트 단위로 구성
   예: The Art Institute of Chicago 에서 제공해주는 API를 통해 보여주는 사이트는 /apps/chicago-museum 이런 식으로
   웹상에서는 http://domain/chicago-museum 이렇게 보이게
-- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum.
+- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum, cleveland-museum.
 - 박물관 폴더명은 `docs/references/api_info.md` 의 `folder` 컬럼을 단일 소스로 사용한다.
 - /scripts: 로컬 정적 서버 start/stop PowerShell 스크립트 (`start-server.ps1`, `stop-server.ps1`)
 

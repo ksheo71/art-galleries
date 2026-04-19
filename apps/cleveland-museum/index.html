@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>The Cleveland Museum of Art</title>
+  <meta name="description" content="Discover artworks from The Cleveland Museum of Art open-access collection."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <div id="header"></div>
+
+  <main class="flex-1 container mx-auto px-4 py-6">
+    <section class="text-center py-10 md:py-20">
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight">The Cleveland Museum of Art</h1>
+      <p class="mt-3 text-gray-600">Open-access collection — ~60,000 CC0 artworks from Cleveland, Ohio.</p>
+      <form id="hero-search" class="mt-8 max-w-2xl mx-auto flex" role="search">
+        <label for="hero-search-input" class="sr-only">Search the collection</label>
+        <input
+          id="hero-search-input"
+          name="q"
+          type="search"
+          required
+          placeholder="Search the collection..."
+          class="flex-1 min-w-0 border border-gray-300 rounded-l px-4 py-3 text-lg"
+        />
+        <button class="bg-emerald-800 text-white px-6 rounded-r font-medium">Search</button>
+      </form>
+    </section>
+
+    <section aria-label="Random gallery preview">
+      <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+    </section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500">
+    Source:
+    <a href="https://www.clevelandart.org" class="underline" target="_blank" rel="noopener">clevelandart.org</a>
+  </footer>
+
+  <script type="module" src="./js/pages/home.js"></script>
+</body>
+</html>

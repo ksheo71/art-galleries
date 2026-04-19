@@ -9,6 +9,10 @@
     { "source": "/metropolitan-museum", "destination": "/metropolitan-museum/index.html" },
     { "source": "/metropolitan-museum/search", "destination": "/metropolitan-museum/search.html" },
     { "source": "/metropolitan-museum/artwork", "destination": "/metropolitan-museum/artwork.html" },
-    { "source": "/metropolitan-museum/favorites", "destination": "/metropolitan-museum/favorites.html" }
+    { "source": "/metropolitan-museum/favorites", "destination": "/metropolitan-museum/favorites.html" },
+    { "source": "/cleveland-museum", "destination": "/cleveland-museum/index.html" },
+    { "source": "/cleveland-museum/search", "destination": "/cleveland-museum/search.html" },
+    { "source": "/cleveland-museum/artwork", "destination": "/cleveland-museum/artwork.html" },
+    { "source": "/cleveland-museum/favorites", "destination": "/cleveland-museum/favorites.html" }
   ]
 }

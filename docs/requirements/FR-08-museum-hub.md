@@ -13,11 +13,12 @@ A top-level landing page at `apps/index.html` lists each supported museum as a c
   - Shows the museum's name prominently.
   - Is a single clickable area linking to the museum's `./<slug>/` path.
   - Has a distinct visual treatment so the two museums are not easily confused.
-- Supported museums at MVP:
+- Supported museums:
   - **The Art Institute of Chicago** → `/chicago-museum/`
   - **The Metropolitan Museum of Art** → `/metropolitan-museum/`
-- Grid is responsive: 1 column on mobile, 2 columns from `md` up.
-- Footer lists the upstream sources (artic.edu, metmuseum.org).
+  - **The Cleveland Museum of Art** → `/cleveland-museum/`
+- Grid is responsive: 1 column on mobile, 2 columns from `md`, 3 columns from `lg`.
+- Footer lists the upstream sources (artic.edu, metmuseum.org, clevelandart.org).
 
 ## Out of Scope (MVP)
 - Cross-museum search.
