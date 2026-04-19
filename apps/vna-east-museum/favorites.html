@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Favorites · V&amp;A East</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <div id="header"></div>
+
+  <main class="flex-1 container mx-auto px-4 py-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Your Favorites</h1>
+      <p id="count-label" class="text-gray-600 text-sm mt-1"></p>
+    </div>
+    <div id="fav-container"></div>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500 mt-12">
+    Source:
+    <a href="https://www.vam.ac.uk" class="underline" target="_blank" rel="noopener">vam.ac.uk</a>
+  </footer>
+
+  <script type="module" src="./js/pages/favorites.js"></script>
+</body>
+</html>

@@ -17,8 +17,9 @@ A top-level landing page at `apps/index.html` lists each supported museum as a c
   - **The Art Institute of Chicago** → `/chicago-museum/`
   - **The Metropolitan Museum of Art** → `/metropolitan-museum/`
   - **The Cleveland Museum of Art** → `/cleveland-museum/`
-- Grid is responsive: 1 column on mobile, 2 columns from `md`, 3 columns from `lg`.
-- Footer lists the upstream sources (artic.edu, metmuseum.org, clevelandart.org).
+  - **V&A East Museum** → `/vna-east-museum/`
+- Grid is responsive: 1 column on mobile, 2 columns from `md`, 4 columns from `xl`.
+- Footer lists the upstream sources (artic.edu, metmuseum.org, clevelandart.org, vam.ac.uk).
 
 ## Out of Scope (MVP)
 - Cross-museum search.
