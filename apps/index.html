@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Art Gallery — Museum Hub</title>
+  <meta name="description" content="Browse collections from partner museums."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .museum-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .museum-card:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <header class="border-b bg-white">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold">Art Gallery</h1>
+      <p class="text-sm text-gray-500 hidden sm:block">Museum Hub</p>
+    </div>
+  </header>
+
+  <main class="flex-1 container mx-auto px-4 py-12 md:py-20">
+    <section class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Choose a museum to explore</h2>
+      <p class="mt-3 text-gray-600">
+        Browse collections powered by public museum APIs. Pick a museum below to start.
+      </p>
+    </section>
+
+    <section>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <a href="./chicago-museum/" class="museum-card block rounded-lg shadow-sm hover:shadow-lg overflow-hidden bg-white focus:outline-none focus:ring-4 focus:ring-red-200">
+          <div class="aspect-[16/9] bg-gradient-to-br from-red-900 to-red-700 flex items-center justify-center text-center px-6">
+            <div class="text-white">
+              <p class="text-xs uppercase tracking-[0.2em] text-white/70">Established 1879</p>
+              <p class="mt-2 font-serif text-3xl md:text-4xl leading-tight">The Art Institute<br/>of Chicago</p>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-lg">Chicago</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              ~130,000 artworks spanning 5,000 years. Deep-zoom high-res images via IIIF.
+            </p>
+            <p class="mt-3 text-sm font-medium text-red-700">Enter →</p>
+          </div>
+        </a>
+
+        <a href="./metropolitan-museum/" class="museum-card block rounded-lg shadow-sm hover:shadow-lg overflow-hidden bg-white focus:outline-none focus:ring-4 focus:ring-indigo-200">
+          <div class="aspect-[16/9] bg-gradient-to-br from-slate-900 to-slate-700 flex items-center justify-center text-center px-6">
+            <div class="text-white">
+              <p class="text-xs uppercase tracking-[0.2em] text-white/70">Established 1870</p>
+              <p class="mt-2 font-serif text-3xl md:text-4xl leading-tight">The Metropolitan<br/>Museum of Art</p>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-lg">New York</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              ~490,000 objects from every corner of the world. Public-domain images.
+            </p>
+            <p class="mt-3 text-sm font-medium text-slate-700">Enter →</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500">
+    Sources:
+    <a href="https://www.artic.edu" class="underline" target="_blank" rel="noopener">artic.edu</a>
+    ·
+    <a href="https://www.metmuseum.org" class="underline" target="_blank" rel="noopener">metmuseum.org</a>
+  </footer>
+</body>
+</html>

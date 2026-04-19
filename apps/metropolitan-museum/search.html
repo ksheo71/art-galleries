@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Search · The Met</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+  <div id="header"></div>
+
+  <main class="flex-1 container mx-auto px-4 py-6">
+    <div class="mb-4">
+      <h1 id="query-label" class="text-2xl font-bold"></h1>
+      <p id="count-label" class="text-gray-600 text-sm mt-1"></p>
+    </div>
+
+    <div class="grid lg:grid-cols-[18rem_1fr] gap-6 items-start">
+      <aside>
+        <details class="lg:block" open>
+          <summary class="cursor-pointer lg:hidden py-2 font-medium border rounded px-3">
+            Filters
+          </summary>
+          <div id="filters" class="mt-3 lg:mt-0 p-4 bg-white rounded shadow-sm"></div>
+        </details>
+      </aside>
+      <section>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div class="text-center mt-10">
+          <button type="button" id="load-more" class="hidden px-6 py-2 border rounded">Load more</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500 mt-12">
+    Source:
+    <a href="https://www.metmuseum.org" class="underline" target="_blank" rel="noopener">metmuseum.org</a>
+  </footer>
+
+  <script type="module" src="./js/pages/search.js"></script>
+</body>
+</html>

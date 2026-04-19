@@ -18,3 +18,11 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# Local server runtime (from scripts/start-server.ps1)
+.server-pid
+.server-log.txt
+.server-log.txt.err
+
+# Ad-hoc prompt notes (kept local)
+@프롬프트.md

@@ -10,10 +10,13 @@ Art Gallery
 - /docs/specs: 요구사항을 바탕으로 결정된 spec을 정리해서 저장한다
 - /docs/wireframe: 요구사항을 바탕으로 화면설계서를 작성해서 저장
 - /apps: 구현단계에서 생성되는 것들
+- /apps/index.html : 각 박물관으로 들어가는 허브 랜딩 페이지 (루트 `/` 에서 서빙)
 - /apps 하위에는 API제공해주는 사이트 단위로 구성
-  예: The Art Institute of Chicago 에서 제공해주는 API를 통해 보여주는 사이트는 /apps/chicago-meseum 이런 식으로
-  웹상에서는 http://domain/chicago-meseum 이렇게 보이게
-- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획
+  예: The Art Institute of Chicago 에서 제공해주는 API를 통해 보여주는 사이트는 /apps/chicago-museum 이런 식으로
+  웹상에서는 http://domain/chicago-museum 이렇게 보이게
+- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum.
+- 박물관 폴더명은 `docs/references/api_info.md` 의 `folder` 컬럼을 단일 소스로 사용한다.
+- /scripts: 로컬 정적 서버 start/stop PowerShell 스크립트 (`start-server.ps1`, `stop-server.ps1`)
 
 ## 문서작성가이드라인
 - 요구사항은 최소단위로 작성

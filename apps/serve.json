@@ -1,0 +1,14 @@
+{
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/chicago-museum", "destination": "/chicago-museum/index.html" },
+    { "source": "/chicago-museum/search", "destination": "/chicago-museum/search.html" },
+    { "source": "/chicago-museum/artwork", "destination": "/chicago-museum/artwork.html" },
+    { "source": "/chicago-museum/favorites", "destination": "/chicago-museum/favorites.html" },
+    { "source": "/metropolitan-museum", "destination": "/metropolitan-museum/index.html" },
+    { "source": "/metropolitan-museum/search", "destination": "/metropolitan-museum/search.html" },
+    { "source": "/metropolitan-museum/artwork", "destination": "/metropolitan-museum/artwork.html" },
+    { "source": "/metropolitan-museum/favorites", "destination": "/metropolitan-museum/favorites.html" }
+  ]
+}

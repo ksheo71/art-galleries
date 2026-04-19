@@ -8,11 +8,11 @@ All dynamic data comes from the public Art Institute of Chicago API, called dire
 
 ## Criteria
 - No server-side runtime (no Node, PHP, Python, etc.) is required to run the app.
-- All files under `apps/chicago-meseum/` are static assets: HTML, CSS, JS, images.
+- All files under `apps/chicago-museum/` are static assets: HTML, CSS, JS, images.
 - Calls to third-party APIs go directly from the browser (the Art Institute API supports CORS).
 - No build step is required to run in the browser, but a Tailwind CSS build step is permitted as a development convenience (output committed or produced via simple CLI).
 - No environment variables, secrets, or keys are required (Art Institute API is unauthenticated).
-- The app must function when opened behind a static host path prefix such as `/chicago-meseum/` (relative paths only — no absolute `/js/...` URLs).
+- The app must function when opened behind a static host path prefix such as `/chicago-museum/` (relative paths only — no absolute `/js/...` URLs).
 
 ## Out of Scope
 - Server-side rendering.

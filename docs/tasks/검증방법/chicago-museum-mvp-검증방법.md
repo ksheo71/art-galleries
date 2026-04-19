@@ -1,6 +1,6 @@
-# Verification: chicago-meseum MVP
+# Verification: chicago-museum MVP
 
-Covers FR-01 … FR-07, NFR-01 … NFR-05 for `apps/chicago-meseum/`.
+Covers FR-01 … FR-07, NFR-01 … NFR-05 for `apps/chicago-museum/`.
 
 ## Prerequisites
 - Node.js installed (`npx` available) — only used to serve static files.
@@ -10,17 +10,17 @@ Covers FR-01 … FR-07, NFR-01 … NFR-05 for `apps/chicago-meseum/`.
 
 ### Windows (Command Prompt / PowerShell / Git Bash)
 ```cmd
-npx --yes serve apps/chicago-meseum
+npx --yes serve apps/chicago-museum
 ```
 
 ### Linux / macOS
 ```bash
-npx --yes serve apps/chicago-meseum
+npx --yes serve apps/chicago-museum
 ```
 
 The server prints a URL — typically `http://localhost:3000` (or the next free port).
 
-> **Note**: `apps/chicago-meseum/serve.json` disables `cleanUrls` so that `.html` suffixes and query strings (e.g., `?q=monet`) survive without being redirect-stripped. If you use a different server, verify `/search.html?q=monet` responds 200 directly (no 301 → `/search`).
+> **Note**: `apps/chicago-museum/serve.json` disables `cleanUrls` so that `.html` suffixes and query strings (e.g., `?q=monet`) survive without being redirect-stripped. If you use a different server, verify `/search.html?q=monet` responds 200 directly (no 301 → `/search`).
 
 ## 2. One-line smoke test (no browser)
 
@@ -91,7 +91,7 @@ Open the printed URL in a browser and verify each item:
 ### Static / no-backend (NFR-01)
 ```bash
 # From repo root. All files under the app must be static types:
-find apps/chicago-meseum -type f | grep -vE '\.(html|css|js|md|svg|png|jpg|ico)$' || echo "OK: only static assets"
+find apps/chicago-museum -type f | grep -vE '\.(html|css|js|md|svg|png|jpg|ico)$' || echo "OK: only static assets"
 ```
 Expected: `OK: only static assets`.
 

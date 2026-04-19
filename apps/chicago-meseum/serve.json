@@ -1,9 +1,0 @@
-{
-  "cleanUrls": false,
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/search", "destination": "/search.html" },
-    { "source": "/artwork", "destination": "/artwork.html" },
-    { "source": "/favorites", "destination": "/favorites.html" }
-  ]
-}

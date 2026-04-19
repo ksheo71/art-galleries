@@ -11,7 +11,7 @@
 - 리다이렉트 시 **쿼리 스트링이 잘려나감**
 - 브라우저가 `/search` 로 이동하면 `location.search` 가 빈 문자열 → `URLSearchParams.get("q")` 가 `null` → `state.q` 가 빈 문자열
 
-**해결**: `apps/chicago-meseum/serve.json` 생성 후 clean URLs 비활성화 + 루트 경로 rewrite 추가:
+**해결**: `apps/chicago-museum/serve.json` 생성 후 clean URLs 비활성화 + 루트 경로 rewrite 추가:
 ```json
 {
   "cleanUrls": false,
@@ -38,4 +38,4 @@
 - 리다이렉트 체인에서 `curl -sIL <URL>` 로 `Location:` 헤더를 확인하면 원인 파악이 빠름.
 - GitHub Pages, Netlify, Vercel, Cloudflare Pages 각각 기본 동작이 다르므로 배포 전 재확인 필요.
 
-**연관 파일**: `apps/chicago-meseum/serve.json`, `docs/tasks/검증방법/chicago-meseum-mvp-검증방법.md`.
+**연관 파일**: `apps/chicago-museum/serve.json`, `docs/tasks/검증방법/chicago-museum-mvp-검증방법.md`.

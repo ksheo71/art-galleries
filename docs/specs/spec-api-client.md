@@ -1,7 +1,7 @@
 # Spec: API Client
 
 ## Purpose
-Define the contract for `apps/chicago-meseum/js/api.js` — the single module that encapsulates all calls to the Art Institute of Chicago API. Every page imports from this module; no raw `fetch` calls elsewhere.
+Define the contract for `apps/chicago-museum/js/api.js` — the single module that encapsulates all calls to the Art Institute of Chicago API. Every page imports from this module; no raw `fetch` calls elsewhere.
 
 ## Base
 - Base URL: `https://api.artic.edu/api/v1`
