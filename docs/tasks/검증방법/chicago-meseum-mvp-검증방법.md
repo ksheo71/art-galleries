@@ -20,6 +20,8 @@ npx --yes serve apps/chicago-meseum
 
 The server prints a URL — typically `http://localhost:3000` (or the next free port).
 
+> **Note**: `apps/chicago-meseum/serve.json` disables `cleanUrls` so that `.html` suffixes and query strings (e.g., `?q=monet`) survive without being redirect-stripped. If you use a different server, verify `/search.html?q=monet` responds 200 directly (no 301 → `/search`).
+
 ## 2. One-line smoke test (no browser)
 
 Verifies that static files are reachable and Art Institute API is accessible from this machine.
