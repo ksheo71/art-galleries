@@ -43,7 +43,7 @@ docker image prune -f >/dev/null
 
 log "waiting for $CONTAINER /healthz (max 60s)"
 for i in $(seq 1 30); do
-  if docker exec "$CONTAINER" wget -qO- --timeout=2 http://127.0.0.1/healthz 2>/dev/null | grep -qx "ok"; then
+  if docker exec "$CONTAINER" wget -qO- --timeout=2 http://127.0.0.1:3100/healthz 2>/dev/null | grep -qx "ok"; then
     log "healthy at attempt $i"
     log "deploy OK ($AFTER_SHA)"
     exit 0

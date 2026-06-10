@@ -50,7 +50,7 @@ Art Gallery
   운영 트리 `scripts/deploy.sh` 실행 → `git reset --hard origin/main` + `docker compose up -d` + `/healthz` 헬스체크.
 - 서빙: 단일 `nginx:alpine` 컨테이너(`art-galleries-frontend`)가 `apps/` 를 read-only 바인드 마운트로
   정적 서빙(빌드 없음, 새 파일 즉시 반영). 라우팅은 `deploy/nginx.conf` 가 `apps/serve.json` 을 미러.
-- 외부 노출: 공용 Cloudflare Tunnel(`edge_shared` 네트워크) 의 Public Hostname `art-galleries.kr → art-galleries-frontend:80`.
+- 외부 노출: 공용 Cloudflare Tunnel(`edge_shared` 네트워크) 의 Public Hostname `art-galleries.kr → art-galleries-frontend:3100` (nginx 는 컨테이너 내부 3100 수신).
 - 운영 트리: `/opt/stack/services/public/art-galleries.kr/www/repo` (GitHub clone). 컨테이너 포트 외부 발행 없음.
 - 관련 파일: `docker-compose.yml`, `deploy/nginx.conf`, `scripts/deploy.sh`, `.github/workflows/deploy.yml`.
 - 검증방법: `docs/tasks/검증방법/맥미니-상시운영-검증방법.md`.

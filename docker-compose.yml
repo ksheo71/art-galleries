@@ -5,7 +5,7 @@
 # 바인드 마운트해서 서빙한다. Dockerfile 빌드 불필요 → 배포 = git pull 만으로 즉시 반영.
 #
 # 외부 노출은 컨테이너 포트 발행이 아니라, 공용 cloudflared 가 edge_shared 안에서
-# art-galleries-frontend:80 으로 라우팅한다(Cloudflare Zero Trust 대시보드 Public Hostname).
+# art-galleries-frontend:3100 으로 라우팅한다(Cloudflare Zero Trust 대시보드 Public Hostname).
 #
 # 사용:
 #   docker compose -f docker-compose.yml up -d
@@ -14,9 +14,9 @@ services:
     image: nginx:alpine
     container_name: art-galleries-frontend
     restart: unless-stopped
-    # 외부 포트 발행 없음 — cloudflared 만 edge_shared 내부망에서 접근
+    # 외부 포트 발행 없음 — cloudflared 만 edge_shared 내부망에서 접근 (nginx 는 3100 수신)
     expose:
-      - "80"
+      - "3100"
     volumes:
       - ./apps:/usr/share/nginx/html:ro
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
