@@ -17,6 +17,10 @@
     { "source": "/vna-east-museum", "destination": "/vna-east-museum/index.html" },
     { "source": "/vna-east-museum/search", "destination": "/vna-east-museum/search.html" },
     { "source": "/vna-east-museum/artwork", "destination": "/vna-east-museum/artwork.html" },
-    { "source": "/vna-east-museum/favorites", "destination": "/vna-east-museum/favorites.html" }
+    { "source": "/vna-east-museum/favorites", "destination": "/vna-east-museum/favorites.html" },
+    { "source": "/yale-museum", "destination": "/yale-museum/index.html" },
+    { "source": "/yale-museum/search", "destination": "/yale-museum/search.html" },
+    { "source": "/yale-museum/artwork", "destination": "/yale-museum/artwork.html" },
+    { "source": "/yale-museum/favorites", "destination": "/yale-museum/favorites.html" }
   ]
 }
