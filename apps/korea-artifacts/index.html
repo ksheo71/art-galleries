@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>우리나라 시대별 유물 — 국가유산청</title>
+  <meta name="description" content="국보·보물 속 도자기·조각·회화·금속공예 등 유물을 선사부터 근대까지 시대·유형별로 감상하세요. 국가유산청 Open API."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-gray-900 min-h-screen flex flex-col">
+  <header class="bg-white border-b sticky top-0 z-30">
+    <div class="container mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <a href="../index.html" class="text-xs text-gray-500 hover:underline" title="허브로">Hub</a>
+        <span class="text-gray-300">·</span>
+        <a href="./index.html" class="font-bold text-lg">우리나라 유물</a>
+      </div>
+      <div class="flex-1"></div>
+      <label for="search" class="sr-only">이름으로 검색</label>
+      <input id="search" type="search" placeholder="이름 검색…"
+        class="w-40 sm:w-64 border border-gray-300 rounded px-3 py-2 text-sm"/>
+    </div>
+  </header>
+
+  <main class="flex-1 container mx-auto px-4 py-6">
+    <section class="text-center py-8 md:py-12">
+      <p class="text-xs uppercase tracking-[0.25em] text-teal-700">국가유산청 · Korea Heritage</p>
+      <h1 class="mt-2 text-3xl md:text-5xl font-bold tracking-tight">우리나라 시대별 유물</h1>
+      <p class="mt-3 text-gray-600">국보·보물 속 <strong>도자기·조각·회화·금속공예</strong>를 선사부터 근대까지 시대·유형별로.</p>
+      <p id="summary" class="mt-1 text-sm text-gray-400"></p>
+    </section>
+
+    <nav id="era-nav" aria-label="시대 필터" class="flex flex-wrap gap-2 justify-center mb-3"></nav>
+    <nav id="type-nav" aria-label="유형 필터" class="flex flex-wrap gap-2 justify-center mb-8"></nav>
+
+    <section aria-label="유물 목록">
+      <div id="status" class="text-center text-gray-500 py-16">불러오는 중…</div>
+      <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+    </section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500">
+    자료 출처:
+    <a href="https://www.khs.go.kr" class="underline" target="_blank" rel="noopener">국가유산청(khs.go.kr)</a>
+    · 공공누리(항목별 유형 상이) — 출처표시 후 이용
+  </footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

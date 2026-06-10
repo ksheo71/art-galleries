@@ -61,3 +61,15 @@
 - "간헐적" 실패는 랜덤 파라미터를 의심하고, 결정적 스윕(page 90,180,...)으로 경계를 찾으면 원인이 빨리 드러난다.
 
 **연관 파일**: `apps/vna-east-museum/js/api.js`, `docs/tasks/검증방법/vna-east-museum-검증방법.md`.
+
+## 2026-06-10 · 국가유산청 이미지 API: 모든 이미지가 단일 `<item>` 에 평탄하게 담김
+
+**증상**: korea-heritage 상세페이지에서 이미지 썸네일 스트립이 1장만 나옴(`totalCnt`는 99인데 파싱 결과 1장).
+
+**원인**: `SearchImageOpenapi.do` 응답은 박물관 통상 패턴(`<item>` 1개당 이미지 1장)과 달리, **하나의 `<item>` 노드 안에 `sn/imageNuri/imageUrl/ccimDesc` 가 N번 반복**되는 평탄 구조다. 따라서 `querySelectorAll("item")` 은 1개만 잡고, 그 안에서 `querySelector("imageUrl")` 는 첫 장만 반환.
+
+**해결**: `apps/korea-heritage/js/detail.js` — `item` 단위가 아니라 `imageUrl`/`ccimDesc` 노드를 각각 전부 모아(`querySelectorAll("imageUrl")`) 인덱스로 짝지어 매핑. 과다 방지로 `.slice(0,15)`.
+
+**교훈**: 공공 XML API 는 동일 기관이라도 엔드포인트마다 레코드 경계(`<item>`)가 일관되지 않을 수 있다. `totalCnt` 와 실제 파싱 개수가 어긋나면 래퍼 노드 구조부터 의심하고, 레코드 단위 대신 **리프 태그를 직접 수집**하는 파싱으로 우회한다.
+
+**연관 파일**: `apps/korea-heritage/js/detail.js`, `docs/tasks/검증방법/korea-heritage-검증방법.md`.

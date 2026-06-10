@@ -25,6 +25,10 @@
     { "source": "/harvard-museum", "destination": "/harvard-museum/index.html" },
     { "source": "/harvard-museum/search", "destination": "/harvard-museum/search.html" },
     { "source": "/harvard-museum/artwork", "destination": "/harvard-museum/artwork.html" },
-    { "source": "/harvard-museum/favorites", "destination": "/harvard-museum/favorites.html" }
+    { "source": "/harvard-museum/favorites", "destination": "/harvard-museum/favorites.html" },
+    { "source": "/korea-heritage", "destination": "/korea-heritage/index.html" },
+    { "source": "/korea-heritage/detail", "destination": "/korea-heritage/detail.html" },
+    { "source": "/korea-artifacts", "destination": "/korea-artifacts/index.html" },
+    { "source": "/korea-artifacts/detail", "destination": "/korea-artifacts/detail.html" }
   ]
 }

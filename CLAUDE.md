@@ -14,7 +14,9 @@ Art Gallery
 - /apps 하위에는 API제공해주는 사이트 단위로 구성
   예: The Art Institute of Chicago 에서 제공해주는 API를 통해 보여주는 사이트는 /apps/chicago-museum 이런 식으로
   웹상에서는 http://domain/chicago-museum 이렇게 보이게
-- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum, cleveland-museum, vna-east-museum, yale-museum, harvard-museum.
+- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum, cleveland-museum, vna-east-museum, yale-museum, harvard-museum, korea-heritage, korea-artifacts.
+- `korea-heritage` 는 박물관 소장품이 아니라 국가유산청(khs.go.kr) Open API 의 **시대별 건축물(유적건조물)** 을 보여주는 앱이다. API 가 시대/분류/이미지를 상세조회에만 주고 목록 필터가 약해, 빌드타임 수집 스크립트(`scripts/harvest.mjs`)로 `data/heritage.json` 을 만들고 프론트는 그 JSON 을 시대별로 렌더링한다(키·프록시 불필요, CORS 허용). 개별 이미지 다건은 상세페이지에서 이미지 API 를 실시간 호출.
+- `korea-artifacts` 는 `korea-heritage` 의 자매 앱으로, 같은 국가유산청 API 의 **유물(동산문화유산: 도자기·조각·회화·금속공예 등, gcodeName="유물")** 을 보여준다. 수집 방식은 동일하나(`scripts/harvest.mjs` → `data/artifacts.json`) 두 가지가 다르다: ① 필터를 `gcodeName="유물"` 로 잡고(건조물 대신), ② 분류 코드(b/m/scodeName)·이름으로 **유형 버킷**(도자기·토기 / 조각·조형 / 회화·서화 / 금속·공예 / 기타)을 부여한다. 프론트는 **시대 ∩ 유형 ∩ 검색** 2축 AND 필터(각 칩은 다른 축 조건을 반영한 동적 건수 표시). 기본 수집 종목은 유물이 많은 `KINDS=11,12`(국보·보물), `MAX_DETAILS=4000`. 목록·이미지 API 구조는 korea-heritage 와 동일.
 - 박물관 폴더명은 `docs/references/api_info.md` 의 `folder` 컬럼을 단일 소스로 사용한다.
 - /scripts: 로컬 정적 서버 start/stop PowerShell 스크립트 (`start-server.ps1`, `stop-server.ps1`)
 
