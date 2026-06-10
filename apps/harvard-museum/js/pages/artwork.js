@@ -30,7 +30,8 @@ async function main() {
 
 function renderDetail(a) {
   const container = document.getElementById("detail-container");
-  const thumb = a.thumbUrl;
+  // Harvard 는 딥줌이 없으므로 상세에서는 고해상 이미지를 메인으로 사용한다.
+  const thumb = a.fullImageUrl || a.thumbUrl;
   const isFav = favorites.has(a.id);
 
   container.innerHTML = `
