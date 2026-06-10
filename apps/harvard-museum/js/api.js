@@ -1,3 +1,5 @@
+import { parseYear } from "./util.js";
+
 // Harvard Art Museums API 어댑터.
 // 키가 필요하지만 정적 프론트엔드에 키를 노출하지 않기 위해, 동일 출처의
 // 키 프록시(/api/harvard/...)를 통해 호출한다. nginx 가 이를 키 프록시 컨테이너로
@@ -123,12 +125,14 @@ export async function search({ q, page = 1, limit = 25 }) {
 
 export async function fetchRandomGallery({ count = 12 } = {}) {
   // 화사한 첫인상: 이미지 있는 "회화(Paintings)"에서 랜덤 페이지로 추출.
-  const page = Math.floor(Math.random() * 400) + 1;
+  // Harvard 회화는 다수가 저작권 제한(imagepermissionlevel)으로 primaryimageurl 이 null →
+  // 표시 가능한 것만 남기므로 넉넉히 과요청 후 count 만큼 슬라이스한다.
+  const page = Math.floor(Math.random() * 100) + 1;
   const result = await request("/object", {
     classification: "Paintings",
     hasimage: 1,
     page,
-    size: count + 4,
+    size: count * 3,
     sort: "random",
     fields: FIELDS,
   });
