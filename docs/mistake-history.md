@@ -39,3 +39,25 @@
 - GitHub Pages, Netlify, Vercel, Cloudflare Pages 각각 기본 동작이 다르므로 배포 전 재확인 필요.
 
 **연관 파일**: `apps/chicago-museum/serve.json`, `docs/tasks/검증방법/chicago-museum-mvp-검증방법.md`.
+
+## 2026-06-10 · V&A East 홈 갤러리 간헐적 "We couldn't load the gallery" (deep pagination 한계)
+
+**증상**: 4개 박물관 중 V&A East Museum 홈만 자주 "We couldn't load the gallery right now." 에러. 다른 3개는 정상. 새로고침하면 가끔 되고 가끔 안 됨(간헐적).
+
+**원인**: V&A 검색 API(`api.vam.ac.uk/v2/objects/search`)는 Elasticsearch 기반으로 **deep pagination 한계**가 있다. `offset = page * page_size` 가 **10,000(`max_result_window`)을 초과**하면 CORS 헤더 없는 에러 응답을 반환 → 브라우저 fetch 가 `TypeError: Failed to fetch` 로 throw → `request()` 의 catch 가 `{ok:false, error:{kind:"network"}}` 반환.
+- `fetchRandomGallery` 가 랜덤 페이지를 **1~1000**, `page_size = count+4 = 16` 으로 호출 → `page > 625` 이면 offset > 10,000 → 실패. 즉 **약 37% 확률**로 실패(측정 ~30%와 일치).
+- 게다가 `pages/home.js` 는 첫 `!ok` 에 **재시도 없이 즉시 renderError** 하므로 한 번만 실패해도 에러 화면.
+- 검증 근거: page 540(offset 8,640) → 200, page 630(offset 10,080) → `Failed to fetch`.
+
+**해결**: `apps/vna-east-museum/js/api.js`
+- 상수 `MAX_RESULT_WINDOW = 10000` 추가.
+- `fetchRandomGallery`: 랜덤 페이지 상한을 `floor(MAX_RESULT_WINDOW / page_size)`(=625) 로 제한.
+- `search`: `totalPages` 를 `min(API pages, floor(MAX_RESULT_WINDOW / limit))` 로 제한해 도달 불가능한(=실패하는) 페이지를 페이지네이션에서 제외.
+- 검증: `fetchRandomGallery` 20/20 성공, 홈 갤러리 12카드 렌더, 검색 최대 페이지(399, offset 9,975)도 200.
+
+**교훈**:
+- 외부 검색 API 의 **deep pagination 한계(max_result_window)** 를 항상 확인한다. 한계 초과 응답이 CORS 헤더 없이 오면 브라우저에선 HTTP 상태가 아니라 `TypeError: Failed to fetch` 로 나타나 원인 파악이 어렵다.
+- 랜덤/페이지네이션 파라미터는 `page * page_size ≤ 한계` 가 항상 성립하도록 상한을 건다.
+- "간헐적" 실패는 랜덤 파라미터를 의심하고, 결정적 스윕(page 90,180,...)으로 경계를 찾으면 원인이 빨리 드러난다.
+
+**연관 파일**: `apps/vna-east-museum/js/api.js`, `docs/tasks/검증방법/vna-east-museum-검증방법.md`.

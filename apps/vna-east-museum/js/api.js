@@ -3,6 +3,11 @@ import { parseYear } from "./util.js";
 const API_BASE = "https://api.vam.ac.uk/v2";
 const IIIF_BASE = "https://framemark.vam.ac.uk/collections";
 
+// V&A 검색 API 는 Elasticsearch 기반으로 deep pagination 한계가 있다:
+// offset(page * page_size) 가 10,000 을 넘는 요청은 CORS 헤더 없는 에러 응답을
+// 반환해 브라우저 fetch 가 "TypeError: Failed to fetch" 로 실패한다.
+const MAX_RESULT_WINDOW = 10000;
+
 function ok(data, pagination) {
   return pagination ? { ok: true, data, pagination } : { ok: true, data };
 }
@@ -160,7 +165,11 @@ export async function search({ q, page = 1, limit = 25 }) {
     .filter((a) => a && a.thumbUrl);
   const info = result.raw.info || {};
   const total = info.record_count ?? items.length;
-  const totalPages = info.pages ?? Math.max(1, Math.ceil(total / limit));
+  // V&A deep-pagination 한계(offset ≤ 10,000) 를 넘는 페이지는 API 가 실패하므로
+  // 도달 가능한 페이지 수로 상한을 둔다(그 이상은 페이지네이션에서 제공하지 않음).
+  const reachablePages = Math.max(1, Math.floor(MAX_RESULT_WINDOW / limit));
+  const apiPages = info.pages ?? Math.max(1, Math.ceil(total / limit));
+  const totalPages = Math.min(apiPages, reachablePages);
 
   return {
     ok: true,
@@ -171,12 +180,15 @@ export async function search({ q, page = 1, limit = 25 }) {
 
 export async function fetchRandomGallery({ count = 12 } = {}) {
   // Sample a random page across the catalog. V&A indexes ~1.3M records
-  // with ~1.2M images; random page up to 1000 keeps latency reasonable
-  // while still producing very different grids on each refresh.
-  const page = Math.floor(Math.random() * 1000) + 1;
+  // with ~1.2M images; a random page produces a fresh grid each refresh.
+  // page * page_size 가 MAX_RESULT_WINDOW 를 넘으면 API 가 실패하므로
+  // 최대 페이지를 floor(10000 / page_size) 로 제한한다.
+  const pageSize = count + 4;
+  const maxPage = Math.max(1, Math.floor(MAX_RESULT_WINDOW / pageSize));
+  const page = Math.floor(Math.random() * maxPage) + 1;
   const result = await request("/objects/search", {
     images_exist: 1,
-    page_size: count + 4,
+    page_size: pageSize,
     page,
   });
   if (!result.ok) return result;
