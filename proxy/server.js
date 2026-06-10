@@ -72,10 +72,16 @@ const server = http.createServer(async (req, res) => {
 
   try {
     const r = await fetch(target.toString(), { headers: { Accept: "application/json" } });
-    const body = Buffer.from(await r.arrayBuffer());
+    const ct = r.headers.get("content-type") || "application/json";
+    let body = Buffer.from(await r.arrayBuffer());
+    // 키 누출 방지: 일부 API(Harvard 등)는 응답의 페이지네이션 URL(info.next/prev)에
+    // apikey 를 그대로 echo 한다. 텍스트/JSON 응답에서 키 문자열을 제거한다.
+    if (up.key && /json|text|javascript|xml/i.test(ct)) {
+      body = Buffer.from(body.toString("utf8").split(up.key).join("REDACTED"), "utf8");
+    }
     res.writeHead(r.status, {
       ...CORS,
-      "Content-Type": r.headers.get("content-type") || "application/json",
+      "Content-Type": ct,
       "Cache-Control": "no-cache",
     });
     res.end(body);

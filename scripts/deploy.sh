@@ -45,15 +45,10 @@ else
   log "no .env at $ENV_FILE — 키 프록시는 키 없이 기동(Harvard 비활성)"
 fi
 
-log "docker compose up -d --build (proxy 이미지 빌드 포함)"
-docker compose "${ENV_ARGS[@]}" -f "$COMPOSE_FILE" up -d --build --remove-orphans
-
-# 바인드 마운트된 nginx.conf 변경은 컨테이너 스펙이 동일하면 compose up 만으로 반영되지 않는다
-# (nginx 프로세스가 옛 설정을 유지). 실행 중인 컨테이너에 설정 리로드를 보내 새 nginx.conf 반영.
-if docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then
-  log "reloading nginx config"
-  docker exec "$CONTAINER" nginx -s reload 2>/dev/null || log "nginx reload skipped (방금 재생성됨)"
-fi
+log "docker compose up -d --build --force-recreate"
+# --force-recreate 필수: 단일 파일 바인드 마운트(nginx.conf)는 git reset 으로 호스트 파일의
+# inode 가 바뀌면 마운트가 끊긴다. 매 배포 컨테이너를 재생성해 새 설정·새 .env 를 확실히 반영한다.
+docker compose "${ENV_ARGS[@]}" -f "$COMPOSE_FILE" up -d --build --force-recreate --remove-orphans
 
 log "pruning dangling images"
 docker image prune -f >/dev/null
