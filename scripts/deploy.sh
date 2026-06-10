@@ -38,6 +38,13 @@ log "HEAD: $BEFORE_SHA → $AFTER_SHA"
 log "docker compose up -d"
 docker compose -f "$COMPOSE_FILE" up -d --remove-orphans
 
+# 바인드 마운트된 nginx.conf 변경은 컨테이너 스펙이 동일하면 compose up 만으로 반영되지 않는다
+# (nginx 프로세스가 옛 설정을 유지). 실행 중인 컨테이너에 설정 리로드를 보내 새 nginx.conf 반영.
+if docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then
+  log "reloading nginx config"
+  docker exec "$CONTAINER" nginx -s reload 2>/dev/null || log "nginx reload skipped (방금 재생성됨)"
+fi
+
 log "pruning dangling images"
 docker image prune -f >/dev/null
 
