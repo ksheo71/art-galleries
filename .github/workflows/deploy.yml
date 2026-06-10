@@ -1,0 +1,21 @@
+name: Deploy to art-galleries.kr
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-art-galleries
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # 맥미니에 설치한 art-galleries 전용 self-hosted 러너에서 직접 실행한다 (SSH 불필요).
+    # 러너는 ksheo71/art-galleries 레포에만 등록되어 있어 pdfsnap 러너와 충돌하지 않는다.
+    runs-on: self-hosted
+    steps:
+      - name: Run deploy.sh on the Mac mini
+        # 러너가 맥미니에서 도는 프로세스이므로, 운영 트리의 deploy.sh 를 그대로 호출한다.
+        # deploy.sh 가 스스로 origin/main 동기화 + docker compose up + 헬스체크를 수행한다.
+        run: /opt/stack/services/public/art-galleries.kr/www/repo/scripts/deploy.sh

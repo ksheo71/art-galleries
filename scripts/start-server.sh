@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-PORT="${1:-5173}"
+PORT="${1:-8010}"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APPS_DIR="$REPO_ROOT/apps"

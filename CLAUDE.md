@@ -44,5 +44,16 @@ Art Gallery
 - frontend: vanilla js / html / tailwind.css
 - backend: 없음 (정적 프론트엔드만). 외부 데이터는 각 미술관 Open API 를 브라우저에서 직접 호출.
 
+## 운영 (맥미니 상시 운영 — pdfsnap 패턴)
+- 공개 도메인: `https://art-galleries.kr` (Cloudflare 존)
+- 배포 흐름: GitHub `main` push → 맥미니 self-hosted runner(`kyle-mini-art-galleries`) →
+  운영 트리 `scripts/deploy.sh` 실행 → `git reset --hard origin/main` + `docker compose up -d` + `/healthz` 헬스체크.
+- 서빙: 단일 `nginx:alpine` 컨테이너(`art-galleries-frontend`)가 `apps/` 를 read-only 바인드 마운트로
+  정적 서빙(빌드 없음, 새 파일 즉시 반영). 라우팅은 `deploy/nginx.conf` 가 `apps/serve.json` 을 미러.
+- 외부 노출: 공용 Cloudflare Tunnel(`edge_shared` 네트워크) 의 Public Hostname `art-galleries.kr → art-galleries-frontend:80`.
+- 운영 트리: `/opt/stack/services/public/art-galleries.kr/www/repo` (GitHub clone). 컨테이너 포트 외부 발행 없음.
+- 관련 파일: `docker-compose.yml`, `deploy/nginx.conf`, `scripts/deploy.sh`, `.github/workflows/deploy.yml`.
+- 검증방법: `docs/tasks/검증방법/맥미니-상시운영-검증방법.md`.
+
 ## git
 - https://github.com/ksheo71/art-galleries.git
