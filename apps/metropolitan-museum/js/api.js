@@ -80,8 +80,13 @@ async function fetchManyByIds(ids, limit) {
 }
 
 export async function fetchRandomGallery({ count = 12 } = {}) {
-  const shuffled = [...HIGHLIGHT_IDS].sort(() => Math.random() - 0.5);
-  const items = await fetchManyByIds(shuffled, count + 4);
+  // 화사한 첫인상: 회화(medium=Paintings) 풀에서 무작위 추출(색감이 풍부한 작품 위주).
+  // 검색이 비거나 실패하면 큐레이션된 하이라이트로 폴백.
+  const pool = await request("/search", { q: "a", hasImages: "true", medium: "Paintings" });
+  let ids = pool.ok && Array.isArray(pool.raw.objectIDs) ? pool.raw.objectIDs : [];
+  if (ids.length === 0) ids = [...HIGHLIGHT_IDS];
+  const shuffled = ids.sort(() => Math.random() - 0.5);
+  const items = await fetchManyByIds(shuffled, count + 8);
   return ok(items.slice(0, count));
 }
 

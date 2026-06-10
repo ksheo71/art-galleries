@@ -5,10 +5,10 @@ import { parseYear } from "./util.js";
 const DATA_BASE = "https://lux.collections.yale.edu/data";
 const SEARCH_BASE = "https://lux.collections.yale.edu/api/search/item";
 
-// classified_as 개념 ID — 랜덤 갤러리를 시각예술(회화·판화·드로잉·사진 등)로 한정해
-// 비미술(archival material 등) 잡음을 제거한다.
-const CONCEPT_VISUAL_WORKS =
-  "https://lux.collections.yale.edu/data/concept/f205dced-45a6-46d4-a4c5-efec14705c55";
+// classified_as 개념 ID — 랜덤 갤러리를 "회화(Paintings)"로 한정해 화사한(색감 풍부한)
+// 작품 위주로 보여준다(고고학 흑백사진 등 잡음 제거). 회화 ~8,000점.
+const CONCEPT_PAINTINGS =
+  "https://lux.collections.yale.edu/data/concept/6704e42b-3ee0-4bbe-a7d6-60696fb4817f";
 
 // 그리드 한 페이지를 객체 N개 병렬 fetch 로 채우므로, 페이지 크기를 작게 유지한다.
 const GRID_PAGE = 12;
@@ -226,11 +226,11 @@ export async function search({ q, page = 1, limit = GRID_PAGE }) {
 }
 
 export async function fetchRandomGallery({ count = GRID_PAGE } = {}) {
-  // 시각예술 + 이미지 보유로 한정, 랜덤 페이지로 매번 다른 그리드.
+  // 회화 + 이미지 보유로 한정, 랜덤 페이지로 매번 다른 화사한 그리드.
   const query = {
-    AND: [{ hasDigitalImage: 1 }, { classification: { id: CONCEPT_VISUAL_WORKS } }],
+    AND: [{ hasDigitalImage: 1 }, { classification: { id: CONCEPT_PAINTINGS } }],
   };
-  const maxPage = 500; // 충분한 다양성 + 지연/유효성 안전선
+  const maxPage = 500; // 회화 ~8,000점 / 16 ≈ 500 페이지 (유효 범위 내)
   const page = Math.floor(Math.random() * maxPage) + 1;
   const refs = await searchRefs(query, { page, pageLength: count + 4 });
   if (!refs.ok) return refs;

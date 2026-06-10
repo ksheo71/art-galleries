@@ -99,12 +99,12 @@ export async function search({ q, page = 1, limit = 25 }) {
 }
 
 export async function fetchRandomGallery({ count = 12 } = {}) {
-  // Sample a random page deep in the catalog (Cleveland has ~60k CC0 works
-  // with images). We over-request by a few to cover items without web
-  // images and still return a full grid.
-  const skip = Math.floor(Math.random() * 3000);
+  // 화사한 첫인상: "회화(Painting)"로 한정해 색감이 풍부한 작품 위주로 보여준다.
+  // Cleveland 에는 이미지 있는 회화가 ~3,900점. 랜덤 skip 으로 매번 다른 그리드.
+  const skip = Math.floor(Math.random() * 3800);
   const result = await request("/artworks/", {
     has_image: 1,
+    type: "Painting",
     limit: count + 6,
     skip,
   });

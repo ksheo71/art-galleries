@@ -83,11 +83,14 @@ export async function search({ q, page = 1, limit = 25 }) {
 }
 
 export async function fetchRandomGallery({ count = 12 } = {}) {
-  const page = Math.floor(Math.random() * 500) + 1;
-  const result = await request("/artworks", {
+  // 화사한 첫인상: 공개도메인 "회화"로 한정해 랜덤 페이지에서 추출(색감이 풍부한 작품 위주).
+  const page = Math.floor(Math.random() * 50) + 1;
+  const result = await request("/artworks/search", {
+    "query[bool][must][0][term][classification_title.keyword]": "painting",
+    "query[bool][must][1][term][is_public_domain]": "true",
+    fields: LIST_FIELDS,
     page,
     limit: count,
-    fields: LIST_FIELDS,
   });
   if (!result.ok) return result;
   const items = (result.raw.data ?? [])

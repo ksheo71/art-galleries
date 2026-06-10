@@ -48,5 +48,5 @@ A~E 가 로컬에서 모두 통과하고, 배포 후 F 가 통과하면 완료. 
 ## 구현 메모 / 함정 (mistake-history 연계)
 - **N+1 검색**: LUX 검색은 객체 URI만 반환 → `Promise.all` 로 객체 병렬 fetch, 페이지 크기 12로 제한.
 - **이미지 도메인 혼재**: `media.collections.yale.edu`(썸네일, 307), `images.collections.yale.edu`/`collections.library.yale.edu`(IIIF). 그리드는 representation 썸네일 그대로, 상세는 매니페스트(`manifests.collections.yale.edu`)에서 IIIF Image 서비스 추출해 딥줌.
-- **랜덤 잡음 제거**: 바닐라 `hasDigitalImage:1` 은 archival material 등 비미술이 섞임 → `classification = Visual Works` 개념으로 한정.
+- **랜덤 화사함/잡음 제거**: 바닐라 `hasDigitalImage:1` 은 archival material·흑백 발굴사진이 섞임 → `classification = Paintings` 개념으로 한정해 색감 풍부한 회화 위주로 표시.
 - **deep pagination**: LUX 는 V&A 같은 10,000 하드 한계는 없었으나(테스트 시 page 2000도 200), 랜덤 페이지는 다양성/지연 위해 상한(500) 적용.
