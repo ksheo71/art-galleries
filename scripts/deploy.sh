@@ -18,6 +18,7 @@ set -euo pipefail
 DEPLOY_ROOT="/opt/stack/services/public/art-galleries.kr/www"
 REPO_DIR="$DEPLOY_ROOT/repo"
 COMPOSE_FILE="$REPO_DIR/docker-compose.yml"
+ENV_FILE="$DEPLOY_ROOT/.env"   # HARVARD_API_KEY 등 비밀(레포에 없음, 운영 트리에만)
 CONTAINER="art-galleries-frontend"
 
 log()  { printf '\033[1;34m[deploy]\033[0m %s\n' "$*"; }
@@ -35,8 +36,17 @@ git reset --hard origin/main
 AFTER_SHA=$(git rev-parse --short HEAD)
 log "HEAD: $BEFORE_SHA → $AFTER_SHA"
 
-log "docker compose up -d"
-docker compose -f "$COMPOSE_FILE" up -d --remove-orphans
+# .env(비밀) 가 있으면 compose 에 주입. 없으면 키 프록시는 비활성(프론트는 정상 동작).
+ENV_ARGS=()
+if [ -f "$ENV_FILE" ]; then
+  ENV_ARGS=(--env-file "$ENV_FILE")
+  log "using env file $ENV_FILE"
+else
+  log "no .env at $ENV_FILE — 키 프록시는 키 없이 기동(Harvard 비활성)"
+fi
+
+log "docker compose up -d --build (proxy 이미지 빌드 포함)"
+docker compose "${ENV_ARGS[@]}" -f "$COMPOSE_FILE" up -d --build --remove-orphans
 
 # 바인드 마운트된 nginx.conf 변경은 컨테이너 스펙이 동일하면 compose up 만으로 반영되지 않는다
 # (nginx 프로세스가 옛 설정을 유지). 실행 중인 컨테이너에 설정 리로드를 보내 새 nginx.conf 반영.

@@ -27,6 +27,23 @@ services:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - edge_shared
+    depends_on:
+      - proxy
+
+  # 키가 필요한 박물관 API(현재 Harvard) 용 얇은 키 프록시.
+  # 키는 운영 트리 .env(HARVARD_API_KEY)에서 주입 — 레포에는 들어가지 않는다.
+  # nginx 가 /api/harvard/ → 이 컨테이너로 proxy_pass 하므로 브라우저는 동일 출처로 호출.
+  proxy:
+    build: ./proxy
+    image: art-galleries-proxy:latest
+    container_name: art-galleries-proxy
+    restart: unless-stopped
+    environment:
+      - HARVARD_API_KEY=${HARVARD_API_KEY:-}
+    expose:
+      - "8080"
+    networks:
+      - edge_shared
 
 # 공용 cloudflared compose 가 생성/소유하는 외부 네트워크에 합류한다.
 networks:
