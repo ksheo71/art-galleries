@@ -14,9 +14,14 @@ services:
     image: nginx:alpine
     container_name: art-galleries-frontend
     restart: unless-stopped
-    # 외부 포트 발행 없음 — cloudflared 만 edge_shared 내부망에서 접근 (nginx 는 3100 수신)
+    # nginx 는 컨테이너 내부 3100 수신.
+    # - expose: edge_shared 내부망(cloudflared)에서 접근 → 외부 공개 경로
+    # - ports : 맥미니 호스트로 발행 → 로컬 http://localhost:3100 접근용
+    #   (LAN 노출 없이 호스트 로컬만 원하면 "127.0.0.1:3100:3100" 으로 변경)
     expose:
       - "3100"
+    ports:
+      - "3100:3100"
     volumes:
       - ./apps:/usr/share/nginx/html:ro
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
