@@ -73,3 +73,22 @@
 **교훈**: 공공 XML API 는 동일 기관이라도 엔드포인트마다 레코드 경계(`<item>`)가 일관되지 않을 수 있다. `totalCnt` 와 실제 파싱 개수가 어긋나면 래퍼 노드 구조부터 의심하고, 레코드 단위 대신 **리프 태그를 직접 수집**하는 파싱으로 우회한다.
 
 **연관 파일**: `apps/korea-heritage/js/detail.js`, `docs/tasks/검증방법/korea-heritage-검증방법.md`.
+
+## 2026-06-11 · e뮤지엄 OpenAPI: https→4012 / 이미지 토큰 / 키 .env 위치
+
+**증상 3종**:
+1. `https://www.emuseum.go.kr/openapi/relic/list?serviceKey=...` → `resultCode 4012 NO OPENAPI SERVICE`. 같은 키·같은 경로를 **http** 로 부르면 `0000` 정상.
+2. 프록시 경유 이미지가 `406`(text/html). 목록/상세 응답의 `imgThumUri*`/`imgUri` 는 per-image **서명 토큰**(`serviceKey=<token>`)을 가진 http URL인데, 프록시가 그 토큰을 운영 키로 덮어쓰면 `500`, 또 `Accept: application/json` 을 강제하면 이미지가 `406`.
+3. 배포 후 `/api/emuseum` 이 `{"error":"proxy: API key not configured"}`(500). 키를 `REPO_DIR/.env`(`.../www/repo/.env`)에 넣었는데, `scripts/deploy.sh` 는 `ENV_FILE="$DEPLOY_ROOT/.env"`(`.../www/.env`)만 `--env-file` 로 주입한다.
+
+**원인/해결**:
+1. e뮤지엄 OpenAPI 는 **http 전용**(https 라우팅이 서비스로 연결 안 됨). 프록시 `UPSTREAMS.emuseum.base` 를 `http://www.emuseum.go.kr/openapi` 로 둔다(서버측 호출이라 평문 무방, 브라우저는 동일출처 https 로 호출).
+2. 프록시 규칙: **요청에 keyParam 이 이미 있으면 운영 키로 덮어쓰지 않는다**(이미지 토큰 보존). 그리고 **클라이언트 Accept 를 그대로 업스트림에 전달**(이미지=image/*, 데이터=json). 프론트는 이미지 URL 의 `http://www.emuseum.go.kr/openapi/` 접두를 `/api/emuseum/` 로 치환해 동일출처+https 로 로드.
+3. 키는 반드시 **운영 `.env` = `$DEPLOY_ROOT/.env`**(레포 한 단계 위) 에 넣는다. `deploy.sh` 가 `--env-file` 로 그 파일만 읽으므로 `repo/.env` 는 무시된다(기본 .env 보다 `--env-file` 이 우선).
+
+**교훈**:
+- 공공 OpenAPI 가 4012/미동작이면 **http/https 스킴**부터 바꿔본다(키·경로가 맞아도 스킴 때문에 죽을 수 있음).
+- 키 프록시에 **서명 토큰 URL**(이미지 등)이 끼면, 토큰을 운영 키로 덮어쓰지 말고 통과시킨다. 업스트림 `Accept` 협상은 클라이언트 헤더를 그대로 전달한다.
+- 키 프록시 미술관 추가 시 운영 키는 `deploy.sh` 의 `ENV_FILE` 경로(`$DEPLOY_ROOT/.env`)에 넣을 것. 검증은 비밀을 읽지 말고 **공개 `/api/<museum>` 호출이 정상(키 echo 없음)** 인지로 확인.
+
+**연관 파일**: `proxy/server.js`, `deploy/nginx.conf`, `docker-compose.yml`, `apps/emuseum/js/util.js`, `docs/tasks/검증방법/emuseum-검증방법.md`.
