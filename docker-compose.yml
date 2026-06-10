@@ -40,6 +40,8 @@ services:
     restart: unless-stopped
     environment:
       - HARVARD_API_KEY=${HARVARD_API_KEY:-}
+      # e뮤지엄 serviceKey — 운영 트리 .env 에 "Decoding"(원문) 키를 넣을 것(이중 인코딩 방지)
+      - EMUSEUM_API_KEY=${EMUSEUM_API_KEY:-}
     expose:
       - "8080"
     networks:

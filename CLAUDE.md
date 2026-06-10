@@ -14,8 +14,9 @@ Art Gallery
 - /apps 하위에는 API제공해주는 사이트 단위로 구성
   예: The Art Institute of Chicago 에서 제공해주는 API를 통해 보여주는 사이트는 /apps/chicago-museum 이런 식으로
   웹상에서는 http://domain/chicago-museum 이렇게 보이게
-- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum, cleveland-museum, vna-east-museum, yale-museum, harvard-museum, korea-heritage, korea-artifacts.
+- 시작은 The Art Institute of Chicago 로 하지만 점점 더 추가해 나갈 계획. 현재 구현된 앱: chicago-museum, metropolitan-museum, cleveland-museum, vna-east-museum, yale-museum, harvard-museum, korea-heritage, korea-artifacts, emuseum.
 - `korea-heritage` 는 박물관 소장품이 아니라 국가유산청(khs.go.kr) Open API 의 **시대별 건축물(유적건조물)** 을 보여주는 앱이다. API 가 시대/분류/이미지를 상세조회에만 주고 목록 필터가 약해, 빌드타임 수집 스크립트(`scripts/harvest.mjs`)로 `data/heritage.json` 을 만들고 프론트는 그 JSON 을 시대별로 렌더링한다(키·프록시 불필요, CORS 허용). 개별 이미지 다건은 상세페이지에서 이미지 API 를 실시간 호출.
+- `emuseum` 은 **e뮤지엄(국립박물관 통합) 소장품**을 이미지와 함께 보여주는 **라이브 검색 앱**이다(빌드타임 수집 아님). 국가유산청과 달리 **키가 필요**해 Harvard 와 같은 동일출처 키 프록시(`/api/emuseum/*`)를 경유한다. 핵심 함정 3가지: ① 업스트림은 반드시 **http://www.emuseum.go.kr/openapi** — https 는 `4012 NO OPENAPI SERVICE` 를 낸다. ② 목록(`relic/list`)·상세(`relic/detail`, `materialName1`·`nationalityName1`·`desc`·`imageList`·`relationList` 제공)·코드(`code`) 3개 오퍼레이션. ③ **이미지**(`imgThumUri*`·`imgUri`)는 응답에 박힌 per-image 서명 토큰을 가진 http URL → 프론트가 동일출처 `/api/emuseum/img?...` 로 재작성, 프록시는 **요청에 serviceKey 가 이미 있으면 덮어쓰지 않아** 토큰을 보존(메인 키로는 img 가 500). 프록시는 클라이언트 `Accept` 를 그대로 전달한다(이미지에 json Accept 를 강제하면 406). 운영 키는 `.env` 의 `EMUSEUM_API_KEY`(레포 제외).
 - `korea-artifacts` 는 `korea-heritage` 의 자매 앱으로, 같은 국가유산청 API 의 **유물(동산문화유산: 도자기·조각·회화·금속공예 등, gcodeName="유물")** 을 보여준다. 수집 방식은 동일하나(`scripts/harvest.mjs` → `data/artifacts.json`) 두 가지가 다르다: ① 필터를 `gcodeName="유물"` 로 잡고(건조물 대신), ② 분류 코드(b/m/scodeName)·이름으로 **유형 버킷**(도자기·토기 / 조각·조형 / 회화·서화 / 금속·공예 / 기타)을 부여한다. 프론트는 **시대 ∩ 유형 ∩ 검색** 2축 AND 필터(각 칩은 다른 축 조건을 반영한 동적 건수 표시). 기본 수집 종목은 유물이 많은 `KINDS=11,12`(국보·보물), `MAX_DETAILS=4000`. 목록·이미지 API 구조는 korea-heritage 와 동일.
 - 박물관 폴더명은 `docs/references/api_info.md` 의 `folder` 컬럼을 단일 소스로 사용한다.
 - /scripts: 로컬 정적 서버 start/stop PowerShell 스크립트 (`start-server.ps1`, `stop-server.ps1`)
@@ -45,9 +46,11 @@ Art Gallery
 ## 기술스펙
 - frontend: vanilla js / html / tailwind.css
 - backend: 원칙적으로 없음(정적 프론트엔드). 대부분 미술관 Open API 는 브라우저에서 직접 호출.
-  단, **API 키가 필요한 미술관**(Harvard 등)은 키를 정적 자산에 노출하지 않기 위해 얇은 키 프록시
+  단, **API 키가 필요한 미술관**(Harvard, e뮤지엄 등)은 키를 정적 자산에 노출하지 않기 위해 얇은 키 프록시
   컨테이너(`/proxy`, Node, 의존성 0)를 둔다. nginx 가 `/api/<museum>/*` → 프록시로 proxy_pass 하며
-  키는 운영 트리 `.env`(레포 제외)에서 주입한다. 프론트는 동일 출처(`/api/harvard/...`)로 호출.
+  키는 운영 트리 `.env`(레포 제외)에서 주입한다(`HARVARD_API_KEY`, `EMUSEUM_API_KEY`). 프론트는 동일 출처(`/api/harvard/...`, `/api/emuseum/...`)로 호출.
+  프록시 `UPSTREAMS` 에 항목만 추가하면 키 필요 미술관을 늘릴 수 있다. 규칙: 요청에 keyParam 이 이미 있으면 운영 키로
+  덮어쓰지 않고(서명 토큰 보존), 클라이언트 `Accept` 를 그대로 업스트림에 전달한다(이미지/JSON 협상).
 
 ## 운영 (맥미니 상시 운영 — pdfsnap 패턴)
 - 공개 도메인: `https://art-galleries.kr` (Cloudflare 존)

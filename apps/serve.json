@@ -29,6 +29,8 @@
     { "source": "/korea-heritage", "destination": "/korea-heritage/index.html" },
     { "source": "/korea-heritage/detail", "destination": "/korea-heritage/detail.html" },
     { "source": "/korea-artifacts", "destination": "/korea-artifacts/index.html" },
-    { "source": "/korea-artifacts/detail", "destination": "/korea-artifacts/detail.html" }
+    { "source": "/korea-artifacts/detail", "destination": "/korea-artifacts/detail.html" },
+    { "source": "/emuseum", "destination": "/emuseum/index.html" },
+    { "source": "/emuseum/detail", "destination": "/emuseum/detail.html" }
   ]
 }
