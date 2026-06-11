@@ -11,9 +11,11 @@
   <div id="header"></div>
 
   <main class="flex-1 container mx-auto px-4 py-6">
-    <section class="text-center py-10 md:py-20">
-      <h1 class="text-3xl md:text-5xl font-bold tracking-tight">The Cleveland Museum of Art</h1>
-      <p class="mt-3 text-gray-600">Open-access collection — ~60,000 CC0 artworks from Cleveland, Ohio.</p>
+    <section class="relative text-center py-16 md:py-28 -mx-4 px-4 mb-8 rounded-b-2xl overflow-hidden bg-cover bg-center" style="background-image:url('/assets/hero/cleveland-museum.jpg')">
+      <div class="absolute inset-0 bg-black/55"></div>
+      <div class="relative">
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-white drop-shadow-lg">The Cleveland Museum of Art</h1>
+      <p class="mt-3 text-white/85">Open-access collection — ~60,000 CC0 artworks from Cleveland, Ohio.</p>
       <form id="hero-search" class="mt-8 max-w-2xl mx-auto flex" role="search">
         <label for="hero-search-input" class="sr-only">Search the collection</label>
         <input
@@ -26,6 +28,7 @@
         />
         <button class="bg-emerald-800 text-white px-6 rounded-r font-medium">Search</button>
       </form>
+      </div>
     </section>
 
     <section aria-label="Random gallery preview">
