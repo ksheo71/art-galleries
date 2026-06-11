@@ -9,6 +9,11 @@
 #
 # 사용:
 #   docker compose -f docker-compose.yml up -d
+#
+# name: 프로젝트명 고정. 운영 트리가 .../<도메인>/<서비스>/repo 구조라 디렉토리명이 모두
+# "repo" 로 같다. 미지정 시 다른 서비스와 compose 프로젝트가 겹쳐 --remove-orphans 가
+# 남의 컨테이너를 지운다. 반드시 고유 이름을 둔다.
+name: art-galleries
 services:
   frontend:
     image: nginx:alpine
