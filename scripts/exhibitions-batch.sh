@@ -15,6 +15,9 @@ LOG="$DEPLOY_ROOT/exhibitions-batch.log"
   EXHIBITIONS_API_KEY="$(grep -E '^EXHIBITIONS_API_KEY=' "$ENV_FILE" | head -1 | cut -d= -f2-)"
   if [ -z "${EXHIBITIONS_API_KEY:-}" ]; then echo "ERROR: EXHIBITIONS_API_KEY 미설정"; exit 1; fi
   export EXHIBITIONS_API_KEY
+  # 서울 열린데이터광장 키(선택) — 있으면 서울 전시 병합
+  SEOUL_API_KEY="$(grep -E '^SEOUL_API_KEY=' "$ENV_FILE" | head -1 | cut -d= -f2-)"
+  export SEOUL_API_KEY
   cd "$REPO_DIR"
   "$NODE" apps/exhibitions/scripts/harvest.mjs
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') 완료 ==="

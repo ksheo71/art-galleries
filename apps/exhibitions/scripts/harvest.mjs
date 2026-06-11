@@ -23,6 +23,9 @@ if (!KEY) {
   process.exit(1);
 }
 const BASE = "https://api.kcisa.kr/openapi/API_CCA_145/request";
+// 2번째 소스(선택): 서울 열린데이터광장 문화행사(전시). SEOUL_API_KEY 있을 때만 병합.
+const SEOUL_KEY = process.env.SEOUL_API_KEY || "";
+const SEOUL_BASE = "http://openapi.seoul.go.kr:8088";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = `${__dirname}/../data/exhibitions.json`;
 const PAGE_UNIT = Number(process.env.PAGE_UNIT || 500);
@@ -54,6 +57,39 @@ async function getText(url) {
       await sleep(600 * (i + 1));
     }
   }
+}
+async function getJson(url) {
+  for (let i = 0; i < 4; i++) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.json();
+    } catch (e) {
+      if (i === 3) throw e;
+      await sleep(600 * (i + 1));
+    }
+  }
+}
+
+// 서울 열린데이터광장 culturalEventInfo 에서 CODENAME 에 "전시" 포함 행만 수집(1000건씩 페이지).
+async function fetchSeoulExhibitions() {
+  const out = [];
+  const UNIT = 1000;
+  const url = (s, e) => `${SEOUL_BASE}/${SEOUL_KEY}/json/culturalEventInfo/${s}/${e}/`;
+  const j0 = await getJson(url(1, UNIT));
+  const box0 = j0.culturalEventInfo || {};
+  const total = Number(box0.list_total_count || 0);
+  const take = (rows) => { for (const r of rows || []) if (/전시/.test(r.CODENAME || "")) out.push(r); };
+  take(box0.row);
+  for (let s = UNIT + 1; s <= total; s += UNIT) {
+    await sleep(DELAY_MS);
+    try {
+      take((await getJson(url(s, s + UNIT - 1))).culturalEventInfo?.row);
+    } catch (e) {
+      console.warn(`[harvest] 서울 페이지 ${s} 실패: ${e.message}`);
+    }
+  }
+  return out;
 }
 
 // HTML/이중 이스케이프 → 평문 한 줄
@@ -164,52 +200,82 @@ async function main() {
 
   const collected = [];
   const seen = new Set();
-  for (const it of raw) {
-    const title = clean(tag(it, "TITLE"));
-    if (!title) continue;
-    const inst = clean(tag(it, "CNTC_INSTT_NM"));
-    const site = clean(tag(it, "EVENT_SITE"));
-    const url = decodeEnt(tag(it, "URL")).trim();
-    const statusRaw = tag(it, "GENRE").trim(); // 과거/현재/예정전시 등
-    const dates = parseDates(tag(it, "PERIOD"), tag(it, "EVENT_PERIOD"), tag(it, "DESCRIPTION"));
 
-    // 상태: 진행중/예정/지난(최근 PAST_DAYS 이내 종료분). 날짜 없으면 상태값으로 판단.
+  // 공통: 상태 판정(진행중/예정/지난) + 중복 제거 후 collected 에 push. 두 소스가 함께 사용.
+  function pushItem({ title, inst, site, region, statusRaw, dates, desc, thumb, url, charge, localId }) {
+    if (!title) return;
     let status;
     if (dates) {
       if (dates.end >= today) status = dates.start > today ? "upcoming" : "ongoing";
-      else if (dates.end >= pastCutoff) status = "ended"; // 최근 종료분만 "지난"
-      else continue; // 오래된 과거 전시 제외
+      else if (dates.end >= pastCutoff) status = "ended";
+      else return; // 오래된 과거 전시 제외
     } else {
-      if (/예정/.test(statusRaw)) status = "upcoming";
-      else if (/현재/.test(statusRaw)) status = "ongoing";
-      else continue; // 과거(날짜 없음)는 윈도우 판단 불가 → 제외
+      if (/예정/.test(statusRaw || "")) status = "upcoming";
+      else if (/현재/.test(statusRaw || "")) status = "ongoing";
+      else return;
     }
-
-    const rawDesc = tag(it, "DESCRIPTION");
-    const desc = clean(rawDesc).slice(0, 400);
-    // 이미지: IMAGE_OBJECT 우선, 없으면 DESCRIPTION 내 <img>. https 가 아니면(상대/프로토콜상대) 버림(mixed-content/깨짐 방지).
-    const rawThumb = httpsImg(tag(it, "IMAGE_OBJECT")) || httpsImg(imgFromDesc(rawDesc));
-    const thumb = /^https:\/\//.test(rawThumb) ? rawThumb : "";
     const key = `${title}|${inst}`;
-    if (seen.has(key)) continue; // 중복 제거
+    if (seen.has(key)) return; // 소스 간 중복 제거
     seen.add(key);
-
+    const safeThumb = /^https:\/\//.test(thumb || "") ? thumb : "";
+    const genre = classifyGenre(title, desc || "");
     collected.push({
-      id: `${tag(it, "LOCAL_ID").trim() || seen.size}-${status}`,
+      id: `${localId || seen.size}-${status}`,
       title,
       institution: inst,
       site,
-      region: regionOf(inst, site),
-      genre: classifyGenre(title, desc),
-      genreLabel: ALL_GENRES.find((g) => g.key === classifyGenre(title, desc)).label,
-      status, // ongoing | upcoming
+      region: region || regionOf(inst, site),
+      genre,
+      genreLabel: ALL_GENRES.find((g) => g.key === genre).label,
+      status,
       start: dates?.start || null,
       end: dates?.end || null,
-      charge: clean(tag(it, "CHARGE")),
-      thumb,
-      url,
-      desc,
+      charge: charge || "",
+      thumb: safeThumb,
+      url: url || "",
+      desc: desc || "",
     });
+  }
+
+  // 1) 문화포털 공연·전시(API_CCA_145)
+  for (const it of raw) {
+    const rawDesc = tag(it, "DESCRIPTION");
+    pushItem({
+      title: clean(tag(it, "TITLE")),
+      inst: clean(tag(it, "CNTC_INSTT_NM")),
+      site: clean(tag(it, "EVENT_SITE")),
+      statusRaw: tag(it, "GENRE").trim(),
+      dates: parseDates(tag(it, "PERIOD"), tag(it, "EVENT_PERIOD"), tag(it, "DESCRIPTION")),
+      desc: clean(rawDesc).slice(0, 400),
+      thumb: httpsImg(tag(it, "IMAGE_OBJECT")) || httpsImg(imgFromDesc(rawDesc)),
+      url: decodeEnt(tag(it, "URL")).trim(),
+      charge: clean(tag(it, "CHARGE")),
+      localId: tag(it, "LOCAL_ID").trim(),
+    });
+  }
+
+  // 2) 서울 열린데이터광장 문화행사(전시) — 키 있을 때만 병합(시립·구립·지역 venue 보강)
+  if (SEOUL_KEY) {
+    try {
+      const seoulRows = await fetchSeoulExhibitions();
+      console.log(`[harvest] 서울 전시 ${seoulRows.length}건`);
+      for (const r of seoulRows) {
+        pushItem({
+          title: clean(r.TITLE),
+          inst: clean(r.ORG_NAME || r.PLACE),
+          site: clean([r.PLACE, r.GUNAME].filter(Boolean).join(" · ")),
+          region: "서울",
+          dates: parseDates(r.DATE, `${r.STRTDATE || ""} ~ ${r.END_DATE || ""}`),
+          desc: clean(r.ETC_DESC || r.PROGRAM || "").slice(0, 400),
+          thumb: httpsImg(r.MAIN_IMG),
+          url: decodeEnt(r.HMPG_ADDR || r.ORG_LINK || "").trim(),
+          charge: clean(r.USE_FEE || r.IS_FREE || ""),
+          localId: `seoul-${seen.size}`,
+        });
+      }
+    } catch (e) {
+      console.warn(`[harvest] 서울 소스 실패(문화포털만 사용): ${e.message}`);
+    }
   }
 
   // 정렬: 진행중 → 예정 → 지난. 진행중·예정은 시작 임박순, 지난은 최근 종료순.
@@ -230,7 +296,7 @@ async function main() {
   }
 
   const dataset = {
-    source: "한국문화정보원 문화포털 공연·전시 정보 (KCISA API_CCA_145)",
+    source: "문화포털 공연·전시(KCISA API_CCA_145)" + (SEOUL_KEY ? " + 서울 열린데이터광장 문화행사(전시)" : ""),
     sourceUrl: "https://www.culture.go.kr/",
     license: "공공누리(출처표시) — 포스터/원문은 각 기관 소유, 링크아웃",
     generatedAt: new Date().toISOString(),
