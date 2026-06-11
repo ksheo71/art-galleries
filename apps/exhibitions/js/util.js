@@ -25,6 +25,9 @@ export function genreBadge(item) {
 // 상태 + D-day 배지. today 기준.
 export function statusBadge(item, today) {
   const days = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+  if (item.status === "ended") {
+    return `<span class="inline-block text-xs px-2 py-0.5 rounded-full bg-gray-500 text-white">지난</span>`;
+  }
   if (item.status === "upcoming") {
     const d = item.start ? days(today, item.start) : null;
     const label = d != null ? (d <= 0 ? "곧 시작" : `D-${d}`) : "예정";

@@ -27,6 +27,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = `${__dirname}/../data/exhibitions.json`;
 const PAGE_UNIT = Number(process.env.PAGE_UNIT || 500);
 const DELAY_MS = Number(process.env.DELAY_MS || 120);
+const PAST_DAYS = Number(process.env.PAST_DAYS || 180); // 지난 전시: 최근 N일 이내 종료분만 포함
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -124,8 +125,10 @@ function ymd(d) {
 }
 
 async function main() {
-  const today = ymd(new Date());
-  console.log(`[harvest] 기준일 ${today}, pageUnit=${PAGE_UNIT}`);
+  const now = new Date();
+  const today = ymd(now);
+  const pastCutoff = ymd(new Date(now.getTime() - PAST_DAYS * 86400000)); // 지난 전시 하한
+  console.log(`[harvest] 기준일 ${today}, 지난전시 하한 ${pastCutoff}(${PAST_DAYS}일), pageUnit=${PAGE_UNIT}`);
 
   // 1페이지로 totalCount 파악
   const first = await getText(`${BASE}?serviceKey=${KEY}&numOfRows=${PAGE_UNIT}&pageNo=1`);
@@ -155,16 +158,16 @@ async function main() {
     const statusRaw = tag(it, "GENRE").trim(); // 과거/현재/예정전시 등
     const dates = parseDates(tag(it, "PERIOD"), tag(it, "EVENT_PERIOD"), tag(it, "DESCRIPTION"));
 
-    // 진행중+예정만: 종료일이 오늘 이후. 날짜 없으면 상태값으로 판단(과거전시 제외).
+    // 상태: 진행중/예정/지난(최근 PAST_DAYS 이내 종료분). 날짜 없으면 상태값으로 판단.
     let status;
     if (dates) {
-      if (dates.end < today) continue; // 종료된 전시 제외
-      status = dates.start > today ? "upcoming" : "ongoing";
+      if (dates.end >= today) status = dates.start > today ? "upcoming" : "ongoing";
+      else if (dates.end >= pastCutoff) status = "ended"; // 최근 종료분만 "지난"
+      else continue; // 오래된 과거 전시 제외
     } else {
-      if (/과거/.test(statusRaw)) continue;
       if (/예정/.test(statusRaw)) status = "upcoming";
       else if (/현재/.test(statusRaw)) status = "ongoing";
-      else continue; // 날짜·상태 둘 다 모르면 제외(노이즈 방지)
+      else continue; // 과거(날짜 없음)는 윈도우 판단 불가 → 제외
     }
 
     const desc = clean(tag(it, "DESCRIPTION")).slice(0, 400);
@@ -190,15 +193,16 @@ async function main() {
     });
   }
 
-  // 정렬: 진행중 먼저 → 시작일 임박 순
-  const order = { ongoing: 0, upcoming: 1 };
+  // 정렬: 진행중 → 예정 → 지난. 진행중·예정은 시작 임박순, 지난은 최근 종료순.
+  const order = { ongoing: 0, upcoming: 1, ended: 2 };
   collected.sort((a, b) => {
     const s = order[a.status] - order[b.status];
     if (s !== 0) return s;
+    if (a.status === "ended") return (a.end || "") < (b.end || "") ? 1 : -1; // 최근 종료 먼저
     return (a.start || "9999") < (b.start || "9999") ? -1 : 1;
   });
 
-  const byGenre = {}, byRegion = {}, byStatus = { ongoing: 0, upcoming: 0 };
+  const byGenre = {}, byRegion = {}, byStatus = { ongoing: 0, upcoming: 0, ended: 0 };
   for (const g of ALL_GENRES) byGenre[g.key] = 0;
   for (const c of collected) {
     byGenre[c.genre]++;

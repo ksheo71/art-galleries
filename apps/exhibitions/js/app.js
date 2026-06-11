@@ -11,7 +11,7 @@ const searchEl = document.getElementById("search");
 
 let DATA = null;
 let TODAY = "";
-let aGenre = "all", aRegion = "all", aStatus = "all", query = "";
+let aGenre = "all", aRegion = "all", aStatus = "current", query = "";
 
 function cardHtml(item) {
   const where = [item.institution, item.region].filter(Boolean).join(" · ");
@@ -42,7 +42,8 @@ function match(i, o = {}) {
   const g = o.genre ?? aGenre, r = o.region ?? aRegion, s = o.status ?? aStatus;
   if (g !== "all" && i.genre !== g) return false;
   if (r !== "all" && i.region !== r) return false;
-  if (s !== "all" && i.status !== s) return false;
+  if (s === "current") { if (i.status !== "ongoing" && i.status !== "upcoming") return false; }
+  else if (s !== "all" && i.status !== s) return false;
   if (query) {
     const q = query.toLowerCase();
     if (!i.title.toLowerCase().includes(q) && !(i.institution || "").toLowerCase().includes(q)) return false;
@@ -71,11 +72,12 @@ function chip(key, label, n, active) {
 }
 
 function renderNavs() {
-  // 상태
+  // 상태 (지난 전시는 "지난"으로 분리)
   statusNavEl.innerHTML = [
-    chip("all", "전체", countWith({ status: "all" }), aStatus),
+    chip("current", "현재", countWith({ status: "current" }), aStatus),
     chip("ongoing", "진행중", countWith({ status: "ongoing" }), aStatus),
     chip("upcoming", "예정", countWith({ status: "upcoming" }), aStatus),
+    chip("ended", "지난", countWith({ status: "ended" }), aStatus),
   ].join("");
   // 장르
   const gChips = [chip("all", "전체 장르", countWith({ genre: "all" }), aGenre)];
@@ -105,7 +107,8 @@ async function init() {
     return;
   }
   TODAY = DATA.today || new Date().toISOString().slice(0, 10);
-  summaryEl.textContent = `진행중·예정 ${DATA.counts.total}건 · 자료 갱신 ${(DATA.generatedAt || "").slice(0, 10)}`;
+  const bs = DATA.counts.byStatus || {};
+  summaryEl.textContent = `현재 ${(bs.ongoing || 0) + (bs.upcoming || 0)}건 · 지난 ${bs.ended || 0}건 · 자료 갱신 ${(DATA.generatedAt || "").slice(0, 10)}`;
   renderNavs();
   render();
   let t;
