@@ -73,7 +73,11 @@ function clean(s) {
   return t.replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
 }
 
-const httpsImg = (u) => (u ? u.trim().replace(/^http:\/\//i, "https://") : "");
+// XML 엔티티 디코드(특히 URL 의 &amp; → & — 안 하면 쿼리 파라미터가 깨져 404/400).
+const decodeEnt = (s) =>
+  (s || "").replace(/&amp;/g, "&").replace(/&#0*38;/g, "&").replace(/&#x0*26;/gi, "&");
+
+const httpsImg = (u) => (u ? decodeEnt(u).trim().replace(/^http:\/\//i, "https://") : "");
 
 // DESCRIPTION(이중 이스케이프 HTML) 안의 첫 <img src> 추출 — IMAGE_OBJECT 가 없을 때 폴백.
 function imgFromDesc(raw) {
@@ -165,7 +169,7 @@ async function main() {
     if (!title) continue;
     const inst = clean(tag(it, "CNTC_INSTT_NM"));
     const site = clean(tag(it, "EVENT_SITE"));
-    const url = tag(it, "URL").trim();
+    const url = decodeEnt(tag(it, "URL")).trim();
     const statusRaw = tag(it, "GENRE").trim(); // 과거/현재/예정전시 등
     const dates = parseDates(tag(it, "PERIOD"), tag(it, "EVENT_PERIOD"), tag(it, "DESCRIPTION"));
 
