@@ -16,17 +16,22 @@ let aGenre = "all", aRegion = "all", aStatus = "current", query = "";
 function cardHtml(item) {
   const where = [item.institution, item.region].filter(Boolean).join(" · ");
   const period = item.start ? `${item.start} ~ ${item.end || ""}` : "";
-  const poster = item.thumb
+  // 이미지 없으면(또는 로드 실패 시) 제목이 보이는 플레이스홀더가 뒤에서 드러난다.
+  const img = item.thumb
     ? `<img src="${escapeHtml(item.thumb)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer"
-         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-         onerror="this.closest('.poster').classList.add('noimg');this.remove();"/>`
+         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+         onerror="this.remove();"/>`
     : "";
   return `
     <a href="${escapeHtml(item.url || "#")}" target="_blank" rel="noopener"
        class="group block bg-white rounded-lg shadow-sm hover:shadow-lg overflow-hidden focus:outline-none focus:ring-4 focus:ring-rose-200 transition-shadow">
-      <div class="poster aspect-[3/4] bg-gradient-to-br from-stone-200 to-stone-300 overflow-hidden relative">
-        ${poster}
-        <div class="absolute top-2 left-2">${statusBadge(item, TODAY)}</div>
+      <div class="poster aspect-[3/4] bg-gradient-to-br from-rose-100 via-stone-100 to-stone-200 overflow-hidden relative">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-3 gap-1">
+          <span class="text-stone-700 text-sm font-semibold leading-snug line-clamp-4">${escapeHtml(item.title)}</span>
+          <span class="text-stone-400 text-[11px] line-clamp-1">${escapeHtml(item.institution || "")}</span>
+        </div>
+        ${img}
+        <div class="absolute top-2 left-2 z-10">${statusBadge(item, TODAY)}</div>
       </div>
       <div class="p-3">
         <div class="flex flex-wrap items-center gap-1.5 mb-1.5">${genreBadge(item)}</div>

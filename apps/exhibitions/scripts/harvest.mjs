@@ -75,6 +75,17 @@ function clean(s) {
 
 const httpsImg = (u) => (u ? u.trim().replace(/^http:\/\//i, "https://") : "");
 
+// DESCRIPTION(이중 이스케이프 HTML) 안의 첫 <img src> 추출 — IMAGE_OBJECT 가 없을 때 폴백.
+function imgFromDesc(raw) {
+  if (!raw) return "";
+  let t = raw;
+  for (let i = 0; i < 2; i++) {
+    t = t.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
+  }
+  const m = t.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
+  return m ? m[1].trim() : "";
+}
+
 // 기간 자유텍스트 → {start,end} (YYYY-MM-DD). 날짜 2개 추출(시작/종료).
 function parseDates(...texts) {
   for (const s of texts) {
@@ -170,7 +181,11 @@ async function main() {
       else continue; // 과거(날짜 없음)는 윈도우 판단 불가 → 제외
     }
 
-    const desc = clean(tag(it, "DESCRIPTION")).slice(0, 400);
+    const rawDesc = tag(it, "DESCRIPTION");
+    const desc = clean(rawDesc).slice(0, 400);
+    // 이미지: IMAGE_OBJECT 우선, 없으면 DESCRIPTION 내 <img>. https 가 아니면(상대/프로토콜상대) 버림(mixed-content/깨짐 방지).
+    const rawThumb = httpsImg(tag(it, "IMAGE_OBJECT")) || httpsImg(imgFromDesc(rawDesc));
+    const thumb = /^https:\/\//.test(rawThumb) ? rawThumb : "";
     const key = `${title}|${inst}`;
     if (seen.has(key)) continue; // 중복 제거
     seen.add(key);
@@ -187,7 +202,7 @@ async function main() {
       start: dates?.start || null,
       end: dates?.end || null,
       charge: clean(tag(it, "CHARGE")),
-      thumb: httpsImg(tag(it, "IMAGE_OBJECT")),
+      thumb,
       url,
       desc,
     });
