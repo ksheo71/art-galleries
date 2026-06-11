@@ -19,6 +19,9 @@ Thumbs.db
 .env
 .env.local
 
+# 야간 배치가 매일 생성하는 전시 데이터(커밋하지 않음 — deploy git reset 가 덮어쓰지 않도록)
+apps/exhibitions/data/exhibitions.json
+
 # Local server runtime (from scripts/start-server.ps1)
 .server-pid
 .server-log.txt

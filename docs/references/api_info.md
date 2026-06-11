@@ -9,3 +9,4 @@
 | 국가유산청 (Korea Heritage Service) | korea-heritage      | https://www.khs.go.kr/       | https://www.khs.go.kr/cha/ (키 불필요·CORS 허용. 시대별 건축물(유적건조물). 빌드타임 수집 → data/heritage.json) |
 | 국가유산청 (Korea Heritage Service) | korea-artifacts     | https://www.khs.go.kr/       | https://www.khs.go.kr/cha/ (키 불필요·CORS 허용. 시대×유형별 유물(gcodeName=유물: 도자기·조각·회화·금속공예). 빌드타임 수집 → data/artifacts.json) |
 | e뮤지엄 (국립박물관 통합)            | emuseum             | https://www.emuseum.go.kr/   | http://www.emuseum.go.kr/openapi/ (키 필요 → 동일출처 프록시 /api/emuseum/. ⚠️http 전용·https 는 4012. 라이브 검색: relic/list·relic/detail·code·img) |
+| 문화포털 공연·전시 (한국문화정보원)  | exhibitions         | https://www.culture.go.kr/   | https://api.kcisa.kr/openapi/API_CCA_145/request (키 필요·전용키. 전국 진행중·예정 전시. 야간 launchd 배치 → data/exhibitions.json. GENRE는 상태값이라 장르는 제목/설명 분류, 포스터는 링크아웃) |

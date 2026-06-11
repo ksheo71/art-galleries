@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>전국 전시 — 장르별</title>
+  <meta name="description" content="전국 미술관·박물관의 진행중·예정 전시를 장르·지역별로 한눈에. 매일 갱신."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>.poster.noimg img{display:none}</style>
+</head>
+<body class="bg-stone-50 text-gray-900 min-h-screen flex flex-col" style="background-image:linear-gradient(160deg,#faf7f7,#efeaea 55%,#e8e3e3);background-attachment:fixed;">
+  <header class="bg-white/95 backdrop-blur border-b sticky top-0 z-30">
+    <div class="container mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <a href="../index.html" class="text-xs text-gray-500 hover:underline" title="허브로">Hub</a>
+        <span class="text-gray-300">·</span>
+        <a href="./index.html" class="font-bold text-lg">전국 전시</a>
+      </div>
+      <div class="flex-1"></div>
+      <label for="search" class="sr-only">전시명·기관 검색</label>
+      <input id="search" type="search" placeholder="전시명·기관 검색…"
+        class="w-40 sm:w-64 border border-gray-300 rounded px-3 py-2 text-sm"/>
+    </div>
+  </header>
+
+  <main class="flex-1 container mx-auto px-4 py-6">
+    <section class="relative text-center py-12 md:py-16 -mx-4 px-4 mb-6 rounded-b-2xl overflow-hidden bg-gradient-to-br from-rose-900 via-rose-800 to-stone-800">
+      <div class="relative text-white">
+        <p class="text-xs uppercase tracking-[0.25em] text-white/70">Exhibitions · Korea</p>
+        <h1 class="mt-2 text-3xl md:text-5xl font-bold tracking-tight drop-shadow">전국 전시, 장르별로</h1>
+        <p class="mt-3 text-white/85">전국 미술관·박물관의 <strong>진행중·예정</strong> 전시를 장르·지역별로. 매일 갱신.</p>
+        <p id="summary" class="mt-1 text-sm text-white/60"></p>
+      </div>
+    </section>
+
+    <nav id="status-nav" aria-label="상태 필터" class="flex flex-wrap gap-2 justify-center mb-3"></nav>
+    <nav id="genre-nav" aria-label="장르 필터" class="flex flex-wrap gap-2 justify-center mb-3"></nav>
+    <nav id="region-nav" aria-label="지역 필터" class="flex flex-wrap gap-2 justify-center mb-8"></nav>
+
+    <section aria-label="전시 목록">
+      <div id="status" class="text-center text-gray-500 py-16">불러오는 중…</div>
+      <div id="gallery" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+    </section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500">
+    자료: <a href="https://www.culture.go.kr" class="underline" target="_blank" rel="noopener">문화포털(한국문화정보원)</a> 공연·전시 정보 · 공공누리(출처표시)
+    <span class="block mt-1 text-xs text-gray-400">전시 포스터·상세는 각 기관 소유입니다. 카드를 누르면 <strong>원문 페이지</strong>로 이동합니다.</span>
+  </footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
