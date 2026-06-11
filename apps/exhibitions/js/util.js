@@ -22,6 +22,17 @@ export function genreBadge(item) {
   return `<span class="inline-block text-xs px-2 py-0.5 rounded-full ${s}">${escapeHtml(item.genreLabel)}</span>`;
 }
 
+// 이미지 없는 전시용 장르별 기본 이미지(그라데이션 + 아이콘). 외부 파일 없이 일관된 디자인.
+export const GENRE_PLACEHOLDER = {
+  "painting":     { grad: "from-rose-200 to-rose-50",     icon: "🎨" },
+  "sculpture":    { grad: "from-violet-200 to-violet-50", icon: "🗿" },
+  "photo-media":  { grad: "from-sky-200 to-sky-50",       icon: "📷" },
+  "craft-design": { grad: "from-amber-200 to-amber-50",   icon: "🏺" },
+  "calligraphy":  { grad: "from-stone-300 to-stone-100",  icon: "🖌️" },
+  "history":      { grad: "from-emerald-200 to-emerald-50", icon: "🏛️" },
+  "etc":          { grad: "from-rose-100 to-stone-200",   icon: "🖼️" },
+};
+
 // 상태 + D-day 배지. today 기준.
 export function statusBadge(item, today) {
   const days = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);

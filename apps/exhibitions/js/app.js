@@ -1,5 +1,5 @@
 // 홈: 전국 전시 — 장르 ∩ 지역 ∩ 상태 ∩ 검색
-import { escapeHtml, genreBadge, statusBadge, loadDataset } from "./util.js";
+import { escapeHtml, genreBadge, statusBadge, loadDataset, GENRE_PLACEHOLDER } from "./util.js";
 
 const galleryEl = document.getElementById("gallery");
 const statusEl = document.getElementById("status");
@@ -16,7 +16,8 @@ let aGenre = "all", aRegion = "all", aStatus = "current", query = "";
 function cardHtml(item) {
   const where = [item.institution, item.region].filter(Boolean).join(" · ");
   const period = item.start ? `${item.start} ~ ${item.end || ""}` : "";
-  // 이미지 없으면(또는 로드 실패 시) 제목이 보이는 플레이스홀더가 뒤에서 드러난다.
+  // 이미지 없으면(또는 로드 실패 시) 장르별 기본 이미지(색+아이콘+제목)가 뒤에서 드러난다.
+  const ph = GENRE_PLACEHOLDER[item.genre] || GENRE_PLACEHOLDER.etc;
   const img = item.thumb
     ? `<img src="${escapeHtml(item.thumb)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer"
          class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -25,10 +26,11 @@ function cardHtml(item) {
   return `
     <a href="${escapeHtml(item.url || "#")}" target="_blank" rel="noopener"
        class="group block bg-white rounded-lg shadow-sm hover:shadow-lg overflow-hidden focus:outline-none focus:ring-4 focus:ring-rose-200 transition-shadow">
-      <div class="poster aspect-[3/4] bg-gradient-to-br from-rose-100 via-stone-100 to-stone-200 overflow-hidden relative">
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-3 gap-1">
-          <span class="text-stone-700 text-sm font-semibold leading-snug line-clamp-4">${escapeHtml(item.title)}</span>
-          <span class="text-stone-400 text-[11px] line-clamp-1">${escapeHtml(item.institution || "")}</span>
+      <div class="poster aspect-[3/4] bg-gradient-to-br ${ph.grad} overflow-hidden relative">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-3 gap-2">
+          <span class="text-4xl opacity-80" aria-hidden="true">${ph.icon}</span>
+          <span class="text-stone-700 text-sm font-semibold leading-snug line-clamp-3">${escapeHtml(item.title)}</span>
+          <span class="text-stone-500 text-[11px] line-clamp-1">${escapeHtml(item.institution || "")}</span>
         </div>
         ${img}
         <div class="absolute top-2 left-2 z-10">${statusBadge(item, TODAY)}</div>
