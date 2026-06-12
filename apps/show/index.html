@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>개인전 · Art Galleries</title>
+  <meta name="description" content="art-galleries.kr 회원의 사이버 개인전"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .art-card { transition: transform .2s ease, box-shadow .2s ease; }
+    .art-card:hover { transform: translateY(-2px); }
+    .fade-in { animation: fade .35s ease both; }
+    @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col"
+      style="background-image:linear-gradient(160deg,#f7f6f4,#ecebe8 55%,#e6e5e2);background-attachment:fixed;">
+
+  <header class="border-b bg-white/95 backdrop-blur sticky top-0 z-30">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 min-w-0">
+        <a href="/" class="text-xs text-gray-500 hover:underline whitespace-nowrap">← Gallery</a>
+        <span class="text-gray-300">·</span>
+        <h1 id="title" class="text-lg md:text-xl font-bold truncate">개인전</h1>
+      </div>
+      <a id="blogLink" href="#" target="_blank" rel="noopener"
+         class="text-sm text-rose-700 hover:underline whitespace-nowrap hidden">블로그 →</a>
+    </div>
+  </header>
+
+  <main class="flex-1 container mx-auto px-4 py-10 md:py-14">
+    <section id="intro" class="text-center max-w-2xl mx-auto mb-10 hidden">
+      <p class="text-xs uppercase tracking-[0.25em] text-rose-700">Solo Exhibition</p>
+      <h2 id="artist" class="mt-2 text-3xl md:text-5xl font-bold tracking-tight"></h2>
+      <p id="bio" class="mt-3 text-gray-600"></p>
+    </section>
+
+    <div id="status" class="text-center text-gray-500 py-20">불러오는 중…</div>
+
+    <section id="grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 max-w-6xl mx-auto"></section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm text-gray-500">
+    <a href="https://art-galleries.kr" class="underline">art-galleries.kr</a>
+    <span class="block mt-1 text-xs text-gray-400">사이버 개인전 — 작품은 각 작가의 블로그에서 관리됩니다.</span>
+  </footer>
+
+  <!-- 상세 모달 -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4" onclick="if(event.target===this)closeModal()">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto fade-in">
+      <div class="md:flex">
+        <div class="md:w-3/5 bg-gray-100 flex items-center justify-center p-4">
+          <img id="mImg" alt="" class="max-h-[70vh] w-auto object-contain rounded"/>
+        </div>
+        <div class="md:w-2/5 p-6">
+          <button onclick="closeModal()" class="float-right text-gray-400 hover:text-gray-700 text-2xl leading-none">×</button>
+          <h3 id="mTitle" class="text-2xl font-bold tracking-tight pr-6"></h3>
+          <p id="mMeta" class="text-sm text-gray-500 mt-2"></p>
+          <div id="mDesc" class="entry mt-4 text-gray-700 leading-relaxed text-sm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BLOG = 'https://blog.art-galleries.kr';
+
+    function getUser() {
+      const q = new URLSearchParams(location.search).get('u');
+      if (q) return q.replace(/[^a-z0-9_-]/gi, '');
+      const m = location.pathname.match(/\/show\/([^\/?#]+)/);
+      return m ? decodeURIComponent(m[1]).replace(/[^a-z0-9_-]/gi, '') : '';
+    }
+
+    const user = getUser();
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => (s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    function restURL(path) { return `${BLOG}/${user}/?rest_route=${encodeURIComponent(path)}`; }
+
+    function artworkImage(a) {
+      const fm = a._embedded && a._embedded['wp:featuredmedia'] && a._embedded['wp:featuredmedia'][0];
+      if (fm && fm.source_url) return fm.source_url;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = (a.content && a.content.rendered) || '';
+      const img = tmp.querySelector('img');
+      return img && img.src ? img.src : null;
+    }
+
+    function metaLine(a) {
+      const parts = [];
+      if (a.meta && a.meta.ag_year) parts.push(esc(a.meta.ag_year));
+      if (a.meta && a.meta.ag_medium) parts.push(esc(a.meta.ag_medium));
+      return parts.join(' · ');
+    }
+
+    let works = [];
+
+    function openModal(i) {
+      const a = works[i]; if (!a) return;
+      const img = artworkImage(a);
+      $('mImg').src = img || '';
+      $('mImg').style.display = img ? '' : 'none';
+      $('mTitle').innerHTML = a.title.rendered || '(무제)';
+      $('mMeta').textContent = metaLine(a).replace(/&amp;/g, '&') || '';
+      $('mDesc').innerHTML = (a.content && a.content.rendered) || '';
+      const m = $('modal'); m.classList.remove('hidden'); m.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      const m = $('modal'); m.classList.add('hidden'); m.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    function card(a, i) {
+      const img = artworkImage(a);
+      const meta = metaLine(a);
+      const media = img
+        ? `<div class="aspect-square bg-gray-100 overflow-hidden"><img src="${esc(img)}" alt="${esc(a.title.rendered)}" loading="lazy" class="w-full h-full object-cover"/></div>`
+        : `<div class="aspect-square bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center p-4 text-center"><span class="font-serif text-white text-lg leading-tight">${a.title.rendered || '무제'}</span></div>`;
+      return `<button onclick="openModal(${i})" class="art-card text-left block rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-rose-200">
+        ${media}
+        <div class="p-3">
+          <h3 class="font-semibold text-sm leading-snug line-clamp-2">${a.title.rendered || '무제'}</h3>
+          ${meta ? `<p class="text-xs text-gray-500 mt-1 line-clamp-1">${meta}</p>` : ''}
+        </div>
+      </button>`;
+    }
+
+    async function load() {
+      if (!user) { $('status').innerHTML = '작가를 찾을 수 없습니다. 주소를 <code>/show/아이디</code> 형식으로 확인하세요.'; return; }
+
+      // 작가(블로그) 정보
+      try {
+        const info = await fetch(restURL('/')).then(r => r.ok ? r.json() : null);
+        if (info && info.name) {
+          const name = info.name;
+          $('title').textContent = name;
+          $('artist').textContent = name;
+          if (info.description) $('bio').textContent = info.description;
+          $('intro').classList.remove('hidden');
+          document.title = `${name} · 개인전`;
+          $('blogLink').href = `${BLOG}/${user}/`;
+          $('blogLink').classList.remove('hidden');
+        }
+      } catch (e) {}
+
+      // 작품
+      try {
+        const res = await fetch(restURL('/wp/v2/artwork') + '&_embed&per_page=100&orderby=date&order=desc');
+        if (!res.ok) throw new Error('http ' + res.status);
+        works = await res.json();
+      } catch (e) {
+        $('status').innerHTML = '작품을 불러오지 못했습니다. 존재하지 않는 작가이거나 일시적 오류일 수 있습니다.';
+        return;
+      }
+
+      if (!works.length) {
+        $('status').innerHTML = '아직 등록된 작품이 없습니다. <span class="block mt-1 text-sm">작가가 블로그 관리자에서 작품을 등록하면 이곳에 전시됩니다.</span>';
+        return;
+      }
+      $('status').classList.add('hidden');
+      $('grid').innerHTML = works.map((a, i) => card(a, i)).join('');
+    }
+
+    load();
+  </script>
+</body>
+</html>
