@@ -15,7 +15,11 @@
   <header class="border-b bg-white">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold">Art Gallery</h1>
-      <p class="text-sm text-gray-500 hidden sm:block">Museum Hub</p>
+      <nav class="flex items-center gap-3 text-sm">
+        <a href="/show" class="text-gray-600 hover:underline">개인전</a>
+        <a href="https://blog.art-galleries.kr/wp-login.php?action=ag_login"
+           class="rounded-md bg-rose-700 text-white px-3 py-1.5 font-medium hover:bg-rose-800">로그인·가입</a>
+      </nav>
     </div>
   </header>
 
@@ -197,6 +201,21 @@
             <p class="mt-3 text-sm font-medium text-rose-700">입장 →</p>
           </div>
         </a>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto mt-16">
+      <div class="rounded-xl bg-white shadow-sm overflow-hidden md:flex">
+        <div class="md:w-1/2 bg-gradient-to-br from-stone-800 to-rose-900 p-8 md:p-12 text-white flex flex-col justify-center">
+          <p class="text-xs uppercase tracking-[0.25em] text-white/70">Members · Solo Exhibition</p>
+          <h2 class="mt-2 font-serif text-3xl md:text-4xl leading-tight">나만의<br/>사이버 개인전</h2>
+          <p class="mt-3 text-white/80 text-sm leading-relaxed">회원이 되면 개인 블로그와 개인전 공간을 함께 받습니다. 작품을 올리면 누구나 감상할 수 있는 전시가 되고, 글은 블로그에 남습니다.</p>
+        </div>
+        <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center gap-3">
+          <a href="/show" class="block text-center rounded-md bg-rose-700 text-white px-5 py-3 font-medium hover:bg-rose-800 focus:outline-none focus:ring-4 focus:ring-rose-200">개인전 둘러보기 →</a>
+          <a href="https://blog.art-galleries.kr/wp-login.php?action=ag_login" class="block text-center rounded-md border border-gray-300 px-5 py-3 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-rose-200">로그인 · 가입 (Google)</a>
+          <p class="text-xs text-gray-400 text-center mt-1">가입은 Google 계정으로, 관리자 승인 후 개설됩니다.</p>
+        </div>
       </div>
     </section>
   </main>

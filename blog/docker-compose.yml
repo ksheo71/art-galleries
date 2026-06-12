@@ -1,0 +1,55 @@
+# blog.art-galleries.kr — WordPress 멀티사이트 (서브디렉토리)
+#
+# 공용 MySQL(mysql:3306, DB=artgalleries) + 공용 Cloudflare 터널(edge_shared) 사용.
+# Cloudflare Zero Trust 대시보드에서 blog.art-galleries.kr → art-galleries-blog:80 매핑.
+#
+# 사용:
+#   cd /opt/stack/services/public/art-galleries.kr/blog/repo
+#   docker compose --env-file ../.env up -d
+#
+name: artgalleries-blog
+
+services:
+  wp:
+    container_name: art-galleries-blog
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: artgalleries
+      WORDPRESS_DB_USER: artgalleries
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: wp_
+      # Google OAuth (회원가입) — 값은 운영 .env 에서 주입(레포 제외)
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      # (a) Cloudflare 뒤 HTTPS 인지(무한 리다이렉트 방지) (b) 멀티사이트 런타임 상수(서브디렉토리).
+      # wp-config 는 매 기동 env 로 재생성되므로 멀티사이트 상수는 반드시 여기 둔다.
+      WORDPRESS_CONFIG_EXTRA: |
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { $$_SERVER['HTTPS'] = 'on'; }
+        define('MULTISITE', true);
+        define('SUBDOMAIN_INSTALL', false);
+        define('DOMAIN_CURRENT_SITE', 'blog.art-galleries.kr');
+        define('PATH_CURRENT_SITE', '/');
+        define('SITE_ID_CURRENT_SITE', 1);
+        define('BLOG_ID_CURRENT_SITE', 1);
+        define('AG_GOOGLE_CLIENT_ID', getenv('GOOGLE_OAUTH_CLIENT_ID') ?: '');
+        define('AG_GOOGLE_CLIENT_SECRET', getenv('GOOGLE_OAUTH_CLIENT_SECRET') ?: '');
+    expose:
+      - "80"
+    ports:
+      - "127.0.0.1:8090:80"   # 로컬 점검용(맥미니 내부만)
+    volumes:
+      - /opt/stack/data/art-galleries.kr/blog/wp-content:/var/www/html/wp-content
+      - ./apache-wp-multisite.conf:/etc/apache2/conf-enabled/zz-wp-multisite.conf:ro
+    networks:
+      - edge_shared
+      - db_shared
+
+networks:
+  edge_shared:
+    name: edge_shared
+    external: true
+  db_shared:
+    name: db_shared
+    external: true

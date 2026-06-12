@@ -128,8 +128,44 @@
       </button>`;
     }
 
+    function dirCard(x) {
+      const cover = x.cover
+        ? `<div class="aspect-square bg-gray-100 overflow-hidden"><img src="${esc(x.cover)}" alt="${esc(x.name)}" loading="lazy" class="w-full h-full object-cover"/></div>`
+        : `<div class="aspect-square bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center p-4 text-center"><span class="font-serif text-white text-lg leading-tight">${esc(x.name)}</span></div>`;
+      return `<a href="/show/${encodeURIComponent(x.handle)}" class="art-card block rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-rose-200">
+        ${cover}
+        <div class="p-3">
+          <h3 class="font-semibold text-sm leading-snug line-clamp-1">${esc(x.name)}</h3>
+          <p class="text-xs text-gray-500 mt-1">작품 ${x.count}점</p>
+        </div>
+      </a>`;
+    }
+
+    async function loadDirectory() {
+      document.title = '개인전 디렉토리 · Art Galleries';
+      $('artist').textContent = '사이버 개인전';
+      $('bio').textContent = '회원들의 개인전을 둘러보세요. 작품을 클릭하면 작가의 전시 공간으로 들어갑니다.';
+      $('intro').classList.remove('hidden');
+      let list;
+      try {
+        const res = await fetch(`${BLOG}/?rest_route=/ag/v1/exhibitions`);
+        if (!res.ok) throw new Error('http ' + res.status);
+        list = await res.json();
+      } catch (e) {
+        $('status').innerHTML = '디렉토리를 불러오지 못했습니다.';
+        return;
+      }
+      const shown = (list || []).filter(x => x.count > 0);
+      if (!shown.length) {
+        $('status').innerHTML = '아직 공개된 개인전이 없습니다. <span class="block mt-1 text-sm">회원이 작품을 등록하면 이곳에 전시됩니다.</span>';
+        return;
+      }
+      $('status').classList.add('hidden');
+      $('grid').innerHTML = shown.map(dirCard).join('');
+    }
+
     async function load() {
-      if (!user) { $('status').innerHTML = '작가를 찾을 수 없습니다. 주소를 <code>/show/아이디</code> 형식으로 확인하세요.'; return; }
+      if (!user) return loadDirectory();
 
       // 작가(블로그) 정보
       try {

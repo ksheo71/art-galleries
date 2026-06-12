@@ -1,0 +1,18 @@
+/*
+Theme Name: Art Galleries
+Theme URI: https://art-galleries.kr
+Description: art-galleries.kr 허브와 같은 룩앤필의 블로그 테마 (Tailwind CDN).
+Version: 1.0
+Author: kyle
+*/
+
+/* 본문(the_content) 기본 가독성 — Tailwind CDN엔 typography가 없어 최소 스타일만 */
+.entry-content { line-height: 1.8; color: #374151; }
+.entry-content p { margin: 1rem 0; }
+.entry-content h2 { font-size: 1.5rem; font-weight: 700; margin: 1.6rem 0 .6rem; }
+.entry-content h3 { font-size: 1.25rem; font-weight: 700; margin: 1.4rem 0 .5rem; }
+.entry-content ul { list-style: disc; padding-left: 1.4rem; margin: 1rem 0; }
+.entry-content ol { list-style: decimal; padding-left: 1.4rem; margin: 1rem 0; }
+.entry-content a { color: #be123c; text-decoration: underline; }
+.entry-content img { border-radius: .5rem; max-width: 100%; height: auto; }
+.entry-content blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; color: #6b7280; margin: 1rem 0; }
