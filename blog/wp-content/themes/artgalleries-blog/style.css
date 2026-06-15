@@ -1,0 +1,13 @@
+/*
+Theme Name: Art Galleries — 개인 블로그
+Theme URI: https://art-galleries.kr
+Template: artgalleries
+Description: 회원 개인 블로그 전용 테마. artgalleries 테마를 부모로 삼아 첫 화면을 '개인 프로필 + 본인 글 목록'으로 보여준다.
+Version: 1.0
+Author: kyle
+*/
+
+/* 부모(artgalleries) style.css 의 .entry-content 가독성 스타일은 functions.php 에서 함께 로드한다. */
+
+/* 개인 블로그 히어로 */
+.ag-hero { background: linear-gradient(160deg, #1f2937, #be123c 120%); }

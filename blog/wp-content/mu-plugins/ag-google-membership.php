@@ -462,6 +462,10 @@ class AG_Membership {
 			$blog_id = wpmu_create_blog($domain, $path, $user->display_name . '의 블로그', $uid, ['public' => 1]);
 			if (is_wp_error($blog_id)) wp_die('블로그 생성 실패: ' . esc_html($blog_id->get_error_message()));
 			add_user_to_blog($blog_id, $uid, 'administrator');
+			// 신규 회원 블로그는 개인 블로그 전용 테마를 기본으로 사용
+			switch_to_blog($blog_id);
+			switch_theme('artgalleries-blog');
+			restore_current_blog();
 			update_user_meta($uid, 'primary_blog', $blog_id);
 			update_user_meta($uid, self::STATUS, 'active');
 		}
